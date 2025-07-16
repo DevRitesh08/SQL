@@ -1,0 +1,36 @@
+---Command to create DATABASE
+Create DATABASE BigDataBootCamp;
+Create DATABASE Test;
+
+---To list down all the databases
+Show Databases;
+
+---Command to drop a DATABASE
+Drop DATABASE Test;
+
+--- Go inside the particular DATABASE
+use BigDataBootCamp;
+
+--- Command to create a TABLE
+Create table if not exists employee
+(
+    id int,
+    name VARCHAR(50)
+);
+
+---Command to list down all the TABLES
+show tables;
+
+
+---Command to list down all the TABLES
+show create table employee;
+
+
+--- Command to create a TABLE
+Create table if not exists employee
+(
+    id int,
+    name VARCHAR(50),
+    salary DOUBLE,
+    hiring_date DATE
+);
