@@ -1,0 +1,47 @@
+
+CREATE DATABASE if not exists day3_db ;
+use day3_db ;
+CREATE table workers (
+    worker_id INT,
+    worker_name varchar(50), 
+    worker_age INT ,
+    salary INT, 
+    city varchar(50)
+)
+
+INSERT INTO workers VALUES(1 , 'akash' , 25 , 25000 , 'jaipur') , (2,'ajay' , 27 , 22000 , 'jaipur') , (3,'aman' , 26 , 24000 , 'agra') , (4,'aditya' , 28 , 26000 , 'jaipur') , (5,'nishant' , 29 , 27000 , 'indore');
+
+SELECT * FROM workers ;
+
+-- Performing multi updates 
+UPDATE workers SET 
+    worker_age = worker_age + 1,
+    salary = salary + 5000
+WHERE city = 'jaipur';
+
+
+
+
+-- auto increment 
+
+-- auto increment is used to generate unique values for a column automatically when a new record is inserted.
+CREATE TABLE IF NOT EXISTS classmates (
+    id INT AUTO_INCREMENT,
+    name VARCHAR(50) ,
+    age INT,
+    PRIMARY KEY(id) -- auto increment is used with primary key as it is unique and cannot have NULL values .
+);
+INSERT INTO classmates (name, age) VALUES ('Shubham', 23), ('Aman', 21), ('Naveen', 24), ('Aditya', 21), ('Nishant', 22) , ('yukti' , 21) , ('sahil' , 22) , ('tushar' , 23) , ('anukriti' , 24) , ('ajay' , 25);
+
+SELECT * FROM classmates;
+
+
+
+-- use of limit clause
+SELECT * FROM classmates LIMIT 6; -- it will always be placed at the end of the query .
+SELECT * FROM classmates LIMIT 3, 5; -- it will skip the first 3 records and return the next 5 records.
+
+
+-- sorting data by using order by clause
+SELECT * FROM classmates ORDER BY name; -- here the sorting order is ascending in nature .
+SELECT * FROM classmates ORDER BY name DESC; -- here the sorting order is descending in nature .
