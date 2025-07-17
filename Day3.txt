@@ -100,7 +100,7 @@ INSERT into employee(emp_name , salary ) VALUES('shantanu', 58000),
         ('sameer' , 61000) , 
         ('mohit' , 72000) , 
         ('suryansh' , 84000) , 
-        ('devansh' , 39000);
+        ('anju' , 39000);
 SELECT * FROM employee ;
 
 -- List all employee whose salary is more than 60k
@@ -126,3 +126,30 @@ SELECT * FROM employee WHERE salary <> 50000 ;
 
 -- List all employee whose salary is between 46k  and 61k
 SELECT * FROM employee WHERE salary BETWEEN 46000 AND 61000 ;
+
+
+
+
+-- How to use like operation in where clause , like operation work for only string type columns ,  like operation is case sensitive .
+
+-- wild-card characters below 
+-- " % " : zero , one , or more characters .
+-- " _ " : only one character .
+
+-- get all those employee whose name start with "r" .
+SELECT * FROM employee where emp_name LIKE 'r%' ;
+
+-- get all those employee whose name start with "rit" .
+SELECT * FROM employee where emp_name LIKE 'rit%' ;
+
+-- get all those employee whose name ends with "i" .
+SELECT * FROM employee where emp_name LIKE '%i' ;
+
+-- get all  those employee whose name starts with "a" and ends with "u" .
+SELECT * FROM employee where emp_name LIKE 'a%u' ;
+
+-- get all those employees whose name have exactly 5 characters .
+SELECT * FROM employee where emp_name LIKE '_____' ; -- use '_' 5 times .
+
+-- get all those employees whose name have at least 7 characters .
+SELECT * FROM employee where emp_name LIKE '%_______%' ;  -- use '_' 7 times .
