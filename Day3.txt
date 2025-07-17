@@ -74,3 +74,12 @@ INSERT into employee(emp_name , salary ) VALUES('Shubham', 50000),
 
 SELECT * FROM employee ORDER BY salary desc , emp_name ASC; -- by default it is in asc order , we can apply multiple level of ordering by using " , " next ordering will be executed when the earlier level is having duplicate values .
 SELECT * FROM employee ;
+
+
+
+-- Write a query to find the employee with the maximum salary .
+select * FROM employee ORDER BY salary desc limit 1 ;
+
+
+-- Write a query to find the employee with the minimum salary .
+select * FROM employee ORDER BY salary  limit 1 ;
