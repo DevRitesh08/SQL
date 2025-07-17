@@ -83,3 +83,46 @@ select * FROM employee ORDER BY salary desc limit 1 ;
 
 -- Write a query to find the employee with the minimum salary .
 select * FROM employee ORDER BY salary  limit 1 ;
+
+
+
+
+-- Conditional Operators : > , < , >= , <=
+-- Logical Operators : AND , OR , NOT
+use day3_db ;
+
+INSERT into employee(emp_name , salary ) VALUES('shantanu', 58000),
+        ( 'rishu', 30000 ),
+        ( 'ritesh', 25000) ,
+        ('ankush', 20000),
+        ('anu', 46000) , 
+        ('payal' , 51000) , 
+        ('sameer' , 61000) , 
+        ('mohit' , 72000) , 
+        ('suryansh' , 84000) , 
+        ('devansh' , 39000);
+SELECT * FROM employee ;
+
+-- List all employee whose salary is more than 60k
+SELECT * FROM employee WHERE salary > 60000 ;
+
+-- List all employee whose salary is equal to 50k , here in sql equality is " = " only . 
+SELECT * FROM employee WHERE salary = 50000 ;
+
+-- List all employee whose salary is between 50k  and 75k
+SELECT * FROM employee WHERE salary >= 50000 and salary <= 75000;
+
+-- List all employee whose salary is not equal to 50k
+--Method 1
+SELECT * FROM employee WHERE salary != 50000 ;
+--Method 2
+SELECT * FROM employee WHERE salary <> 50000 ;
+-- hence both " != " and " <> " can be used for the not equal to condition .
+
+
+
+
+--How to use between operation in where clause 
+
+-- List all employee whose salary is between 46k  and 61k
+SELECT * FROM employee WHERE salary BETWEEN 46000 AND 61000 ;
