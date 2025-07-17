@@ -62,7 +62,12 @@ SELECT* FROM Customer;
 
 
 
--- example for integrity constraint
+
+
+
+
+
+-- EXAMPLE  for integrity constraint
 CREATE TABLE IF NOT EXISTS Orders (
     OrderID INT ,
     CustomerID INT NOT NULL,
@@ -80,4 +85,34 @@ INSERT into orders values(4, null, '2025-07-16');
 -- default value for OrderDate will be used
 INSERT into orders(OrderID,CustomerID) values(6, 1);
 
+--error duplicate value for OrderID will throw an error
+INSERT into orders(OrderID,CustomerID) values(6, 1);
+
 select * from Orders ;
+
+
+
+
+
+
+-- add alias for the constraints ==> it helps in identifying the constraints in case of errors
+CREATE TABLE IF NOT EXISTS Orders_alias (
+    OrderID INT ,
+    CustomerID INT NOT NULL,
+    OrderDate DATE DEFAULT '2025-07-16',
+    constraint UNIQUE_orderid UNIQUE(OrderID),
+    constraint orderId_check check(OrderID > 5)
+) ;
+
+-- error will be thrown if we try to insert a value for OrderID that is less than or equal to 5 .
+INSERT into Orders_alias values(3, 1, '2025-07-16');
+
+-- error will be thrown if we try to insert null value for CustomerID .
+INSERT into Orders_alias values(4, null, '2025-07-16');
+
+-- default value for OrderDate will be used
+INSERT into Orders_alias(OrderID,CustomerID) values(6, 1);
+
+--error duplicate value for OrderID will throw an error
+INSERT into Orders_alias(OrderID,CustomerID) values(6, 1);
+
