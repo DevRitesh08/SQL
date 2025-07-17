@@ -45,3 +45,32 @@ SELECT * FROM classmates LIMIT 3, 5; -- it will skip the first 3 records and ret
 -- sorting data by using order by clause
 SELECT * FROM classmates ORDER BY name; -- here the sorting order is ascending in nature .
 SELECT * FROM classmates ORDER BY name DESC; -- here the sorting order is descending in nature .
+
+
+
+
+
+-- Multi level ordering 
+use day3_db;
+-- create table employee the sort data in desc order by salary and if salaries are same for more than one employee arrange their data in ascending order of name .
+CREATE table if not exists employee (
+    emp_id int AUTO_INCREMENT PRIMARY KEY ,
+    emp_name varchar(50) ,
+    salary int ,
+    city varchar(20) DEFAULT 'jaipur'
+)
+
+INSERT into employee(emp_name , salary ) VALUES('Shubham', 50000),
+        ( 'Aman', 60000 ),
+        ( 'Naveen', 55000) ,
+        ('Aditya', 21000),
+        ('Nishant', 60000) , 
+        ('yukti' , 50000) , 
+        ('sahil' , 21000) , 
+        ('tushar' , 60000) , 
+        ('anukriti' , 90000) , 
+        ('ajay' , 50000);
+
+
+SELECT * FROM employee ORDER BY salary desc , emp_name ASC; -- by default it is in asc order , we can apply multiple level of ordering by using " , " next ordering will be executed when the earlier level is having duplicate values .
+SELECT * FROM employee ;
