@@ -180,3 +180,113 @@ SELECT * FROM employee where salary is null ;
 
 ---- get all those employee whose salary is not last list only 6 data from the last .
 SELECT * FROM employee where salary is not null ORDER BY emp_id DESC LIMIT 6;
+
+
+
+
+
+
+-- Grouping data using group by clause
+CREATE Table order_data(
+    order_id INT  AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT ,
+    country VARCHAR(100) ,
+    state VARCHAR(100) 
+);
+
+INSERT INTO order_data (customer_id, country, state) VALUES
+(100, 'India', 'Delhi'),
+(282, 'India', 'Mumbai'),
+(3928, 'USA', 'California'),
+(4092, 'India', 'Delhi'),
+(52, 'USA', 'Texas'),
+(682, 'India', 'Mumbai'),
+(792, 'USA', 'California'),
+(8829, 'India', 'Delhi'),
+(9920, 'USA', 'Texas'),
+(1021, 'UK', 'London'),
+(1122, 'India', 'Delhi'),
+(1223, 'USA', 'California'),
+(1324, 'India', 'Mumbai'),
+(1425, 'UK', 'Manchester'),
+(1526, 'USA', 'California'),
+(1627, 'India', 'Delhi'),
+(1728, 'India', 'Mumbai'),
+(1829, 'USA', 'Texas'),
+(1920, 'UK', 'London'),
+(2021, 'India', 'Delhi'),
+(2122, 'USA', 'California'),
+(1324, 'Uk', 'London'),
+(1425, 'UK' , 'Manchester'),
+(1526, 'USA', 'California'),
+(1627, 'India', 'Delhi'),
+(1728, 'India', 'Mumbai'),
+(1829, 'USA', 'Texas'),
+(1920, 'UK', 'London'),
+(2021, 'India', 'Delhi'),
+(2122, 'USA', 'California');
+
+SELECT * FROM order_data;
+
+-- Grouping data by country and counting the number of orders in each country
+
+-- Error: Only grouped columns or aggregate functions can be selected; customer_id is not allowed here.
+SELECT country,customer_id , count(*) as order_count from order_data GROUP BY country;
+-- Corrected query: Only grouped columns or aggregate functions can be selected; customer_id is not allowed here.
+SELECT country , count(*) as order_count from order_data GROUP BY country;
+
+
+
+SELECT * FROM classmates;
+-- group data by age and count the number of students in each age group
+SELECT age , count(*) as age_count FROM classmates GROUP BY age;
+
+
+
+SELECT * FROM employee;
+DELETE FROM employee WHERE emp_name = NULL OR salary = NULL; -- this will not delete any record as NULL is not equal to NULL , the correct way to check for NULL is using " IS NULL " or " IS NOT NULL "
+DELETE FROM employee WHERE emp_name IS NULL OR salary IS NULL; -- this will delete all records where emp_name or salary is NULL
+
+create table worker(
+    worker_id INT AUTO_INCREMENT PRIMARY KEY,
+    worker_name VARCHAR(50),
+    worker_age INT,
+    salary INT,
+    city VARCHAR(50)
+);
+INSERT into worker(worker_name, worker_age, salary, city) VALUES
+('Akash', 25, 25000, 'Jaipur'),
+('Ajay', 21, 82000, 'Jaipur'),
+('Aman', 26, 24000, 'Agra'),
+('Aditya', 28, 26000, 'Jaipur'),
+('Nishant', 26, 27000, 'Indore'),
+('Yukti', 21, 23000, 'Delhi'),
+('Sahil', 23, 72000, 'Mumbai'),
+('Tushar', 23, 24000, 'Bangalore'),
+('Anukriti', 28, 95000, 'Chennai'),
+('Ajay', 25, 26000, 'Kolkata'),
+('Rohan', 30, 28000, 'Pune'),
+('Sonia', 26, 29000, 'Hyderabad'),
+('Rahul', 28, 30000, 'Ahmedabad'),
+('Priya', 30, 49000, 'Chennai'),
+('Karan', 26, 32000, 'Delhi');
+
+DROP TABLE IF EXISTS worker;
+
+SELECT * FROM worker;
+-- Grouping data by city and counting the number of workers in each city
+SELECT city, COUNT(*) AS worker_count FROM worker GROUP BY city;
+
+-- Grouping data by age and counting the tatal salary of each age group .
+SELECT worker_age, sum(salary) AS tatal_salary_of_each_age_group FROM worker GROUP BY worker_age;
+
+-- calculate different aggregated matrices for salary .
+SELECT worker_age,
+        sum(salary) AS tatal_salary_of_each_age_group ,
+        max(salary) as Max_salary_of_each_age_group ,
+        min(salary) as Min_salary_of_each_age_group ,
+        avg(salary) as Avg_salary_of_each_age_group ,
+        count(*) as Total_workers_of_each_age_group
+        FROM worker GROUP BY worker_age;
+
+
