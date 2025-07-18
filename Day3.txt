@@ -148,6 +148,9 @@ SELECT * FROM employee where emp_name LIKE '%i' ;
 -- get all  those employee whose name starts with "a" and ends with "u" .
 SELECT * FROM employee where emp_name LIKE 'a%u' ;
 
+-- get all  those employee whose name starts with "y" and second last character is  "t" .
+SELECT * FROM employee where emp_name LIKE 'y%t_' ;
+
 -- get all those employees whose name have exactly 5 characters .
 SELECT * FROM employee where emp_name LIKE '_____' ; -- use '_' 5 times .
 
