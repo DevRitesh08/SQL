@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS day4_db; 
+USE day4_db;
