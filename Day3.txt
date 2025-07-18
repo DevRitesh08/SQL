@@ -156,3 +156,27 @@ SELECT * FROM employee where emp_name LIKE '_____' ; -- use '_' 5 times .
 
 -- get all those employees whose name have at least 7 characters .
 SELECT * FROM employee where emp_name LIKE '%_______%' ;  -- use '_' 7 times .
+
+
+
+
+
+-- How to use is null and is not null in where clause
+INSERT into employee(emp_name , salary ) VALUES('anushka', 58000),
+        ( 'bharti', 30000 ),
+        ( 'harsh', 25000) ,
+        ('megha', 20000),
+        ('purav', 46000) , 
+        (NULL , 51000) , 
+        ('salman' , NULL) , 
+        ('aashish' , NULL) , 
+        ('chirag' , 84000) , 
+        (null , 39000);
+    
+SELECT * FROM employee ;
+
+-- get all those employee whose salary is null
+SELECT * FROM employee where salary is null ;
+
+---- get all those employee whose salary is not last list only 6 data from the last .
+SELECT * FROM employee where salary is not null ORDER BY emp_id DESC LIMIT 6;
