@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS day4_db; 
+fCREATE DATABASE IF NOT EXISTS day4_db; 
 USE day4_db;
 
 CREATE Table order_data(
@@ -71,3 +71,41 @@ SELECT country , GROUP_CONCAT( DISTINCT state) AS states_in_country FROM order_d
 SELECT country , GROUP_CONCAT( DISTINCT state ORDER BY state DESC) AS states_in_country FROM order_data GROUP BY country;
 -- can also change the separator
 SELECT country , GROUP_CONCAT( DISTINCT state ORDER BY state DESC SEPARATOR ' | ') AS states_in_country FROM order_data GROUP BY country;
+
+
+
+
+
+
+-- Subquaries in sql
+
+CREATE table employee (
+    emp_id int AUTO_INCREMENT PRIMARY KEY ,
+    emp_name varchar(50) ,
+    salary int 
+);
+
+INSERT INTO employee (emp_name, salary) VALUES
+('Shubham', 50000),
+('Aman', 60000),
+('Naveen', 55000),
+('Aditya', 21000),
+('Nishant', 60000),
+('yukti', 50000),
+('sahil', 21000),
+('tushar', 60000),
+('anukriti', 90000),
+('ajay', 50000);
+
+
+-- write a query to find the employee that has greater salary then ajay .
+
+--way 1 (not recommended since here we hard coded the salary of ajay)
+SELECT * FROM employee WHERE salary > 50000;
+--way 2 (recommended way)
+-- here we are using a subquery to get the salary of ajay and then using that salary to filter the employees with greater salary.
+SELECT * FROM employee WHERE salary > (SELECT salary FROM employee WHERE emp_name = 'Ajay') ;
+
+-- executing the subquery first and then using the result in the main query .
+SELECT salary FROM employee WHERE emp_name = 'Ajay' ;
+
