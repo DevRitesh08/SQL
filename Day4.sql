@@ -97,7 +97,6 @@ INSERT INTO employee (emp_name, salary) VALUES
 ('anukriti', 90000),
 ('ajay', 50000);
 
-
 -- write a query to find the employee that has greater salary then ajay .
 
 --way 1 (not recommended since here we hard coded the salary of ajay)
@@ -108,4 +107,17 @@ SELECT * FROM employee WHERE salary > (SELECT salary FROM employee WHERE emp_nam
 
 -- executing the subquery first and then using the result in the main query .
 SELECT salary FROM employee WHERE emp_name = 'Ajay' ;
+
+
+
+
+
+-- USE of IN and NOT IN operator
+SELECT * FROM order_data ;
+
+-- write a query to print all orders which were placed in delhi or texas .
+-- Method 1 : using OR operator
+SELECT * FROM order_data WHERE state = 'Delhi' OR state = 'Texas';
+-- Method 2 : using IN operator
+SELECT * FROM order_data WHERE state IN ('Delhi', 'Texas');
 
