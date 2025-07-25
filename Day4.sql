@@ -121,3 +121,44 @@ SELECT * FROM order_data WHERE state = 'Delhi' OR state = 'Texas';
 -- Method 2 : using IN operator
 SELECT * FROM order_data WHERE state IN ('Delhi', 'Texas');
 
+
+
+
+
+
+
+CREATE table customer_order_data(
+    order_id INT  AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT ,
+    supplier_id INT,
+    country VARCHAR(100) ,
+    state VARCHAR(100) 
+);
+
+INSERT INTO customer_order_data(customer_id , supplier_id , country , state) VALUES(001 , 7575 , 'USA' , 'California'),
+(002 , 7576 , 'USA' , 'Texas'),
+(003 , 7577 , 'India' , 'Delhi'),
+(004 , 7578 , 'India' , 'Mumbai'),
+(005 , 7579 , 'UK' , 'London'),
+(006 , 7580 , 'UK' , 'Manchester'),
+(007 , 7581 , 'India' , 'Delhi'),
+(008 , 7582 , 'USA' , 'California'),
+(009 , 7583 , 'India' , 'Mumbai'),
+(010 , 7584 , 'UK' , 'London');
+
+SELECT * FROM customer_order_data;
+
+
+CREATE table supplier_order_data(
+    supplier_id INT,
+    country VARCHAR(100) ,
+    state VARCHAR(100) 
+);
+
+INSERT INTO supplier_order_data VALUES
+(7575, 'USA', 'California'),
+(7576, 'USA', 'Texas'),
+(7577, 'India', 'Delhi'),
+(7584, 'UK', 'London');
+
+SELECT * FROM supplier_order_data;
