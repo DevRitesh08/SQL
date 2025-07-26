@@ -151,14 +151,68 @@ SELECT * FROM customer_order_data;
 
 CREATE table supplier_order_data(
     supplier_id INT,
-    country VARCHAR(100) ,
-    state VARCHAR(100) 
+    sup_country VARCHAR(100) 
 );
 
+
 INSERT INTO supplier_order_data VALUES
-(7575, 'USA', 'California'),
-(7576, 'USA', 'Texas'),
-(7577, 'India', 'Delhi'),
-(7584, 'UK', 'London');
+(7577, 'India'),
+(7584, 'UK');
 
 SELECT * FROM supplier_order_data;
+
+-- write a query to print all the customer orders data where all customers are from the same countries as the supplier .
+SELECT * from customer_order_data WHERE cust_country IN
+(SELECT DISTINCT sup_country FROM supplier_order_data);
+
+
+
+-- case when statement
+-- case when statement is used to perform conditional logic in sql queries, it is similar to if-else statements in programming languages.
+
+
+CREATE Table student_marks (
+    std_id int PRIMARY KEY AUTO_INCREMENT , 
+    std_name VARCHAR(50) , 
+    total_marks int 
+);
+
+INSERT into student_marks(std_name , total_marks ) values(
+    'Shubham' , 90),
+    ('Aman' , 80),
+    ('Naveen' , 90),
+    ('Aditya' , 60),
+    ('Nishant' , 50),
+    ('Yukti' , 30),
+    ('Sahil' , 94),
+    ('Tushar' , 86),
+    ('Anukriti' , 68),
+    ('Ajay' , 100),
+    ('Rohan' , 85),
+    ('Sonia' , 95),
+    ('Rahul' , 75),
+    ('Priya' , 98),
+    ('Karan' , 55),
+    ('Anushka' , 25),
+    ('Bharti' , 35),
+    ('Harsh' , 65),
+    ('Megha' , 58), 
+    ('Purav' , 53);
+
+SELECT * FROM student_marks;
+
+
+-- write a query to print the student name and their grade based on their total marks .
+-- marks >= 90 : A+ , marks >= 80 : A , marks >= 70 : B+ , marks >= 60 : B , marks >= 50 : C+ , marks >= 40 : C , marks < 40 : D
+
+SELECT std_name , 
+    CASE
+        WHEN total_marks >= 90 THEN 'A+'
+        WHEN total_marks >= 80 THEN 'A'
+        WHEN total_marks >= 70 THEN 'B+'
+        WHEN total_marks >= 60 THEN 'B'
+        WHEN total_marks >= 50 THEN 'C+'
+        WHEN total_marks >= 40 THEN 'C'
+        ELSE 'D'
+    END AS grade
+FROM student_marks;
