@@ -248,7 +248,8 @@ SELECT * FROM tree ;
 SELECT node ,
     CASE 
         WHEN parent is null THEN 'Root' 
-        WHEN node IN (SELECT parent FROM tree) THEN 'Intermediate'
+        WHEN node IN (SELECT DISTINCT parent FROM tree) THEN 'Intermediate'
+        -- or   WHEN node IN (SELECT DISTINCT parent FROM tree WHERE parent NOT NULL) THEN 'Intermediate'
         ELSE  'Leaf'
     END as Node_Type
 FROM tree ;
