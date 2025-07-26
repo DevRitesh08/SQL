@@ -249,7 +249,7 @@ SELECT node ,
     CASE 
         WHEN parent is null THEN 'Root' 
         WHEN node IN (SELECT DISTINCT parent FROM tree) THEN 'Intermediate'
-        -- or   WHEN node IN (SELECT DISTINCT parent FROM tree WHERE parent NOT NULL) THEN 'Intermediate'
+        -- or   WHEN node IN (SELECT DISTINCT parent FROM tree WHERE parent NOT NULL) THEN 'Intermediate' ==> when this is written first not the root condition .
         ELSE  'Leaf'
     END as Node_Type
 FROM tree ;
