@@ -254,3 +254,40 @@ SELECT node ,
     END as Node_Type
 FROM tree ;
 
+-- Amazon Interview Question
+-- A transaction table is given with columns trx_date ,  merchant , amount , payment_mode . 
+-- Write a query to find amount received in cash and online for each merchant .
+
+CREATE Table Transaction_table (
+    trx_date DATE ,
+    merchant VARCHAR(20) ,
+    amount int ,
+    payment_mode VARCHAR(20)
+) ;
+
+INSERT INTO Transaction_table (trx_date, merchant, amount, payment_mode) VALUES
+('2025-07-10', 'm1', 1200, 'Cash'),
+('2025-07-10', 'm2', 800, 'Online'),
+('2025-07-11', 'm1', 1500, 'Online'),
+('2025-07-11', 'm3', 600, 'Cash'),
+('2025-07-12', 'm2', 950, 'Cash'),
+('2025-07-12', 'm1', 2000, 'Online'),
+('2025-07-13', 'm3', 700, 'Online'),
+('2025-07-13', 'm2', 1100, 'Cash'),
+('2025-07-14', 'm1', 1750, 'Cash'),
+('2025-07-14', 'm3', 850, 'Online'),
+('2025-07-15', 'm2', 1200, 'Online'),
+('2025-07-15', 'm1', 900, 'Cash'),
+('2025-07-16', 'm3', 1300, 'Cash'),
+('2025-07-16', 'm2', 1050, 'Online'),
+('2025-07-17', 'm1', 1600, 'Online');
+
+SELECT * FROM Transaction_table ;
+
+--  Query 
+SELECT merchant,
+    SUM( CASE WHEN payment_mode = 'Cash' THEN  amount else 0 END ) as Cash_amount ,
+    SUM( CASE WHEN payment_mode = 'Online' THEN  amount else 0  END ) as online_amount
+    FROM Transaction_table
+GROUP BY merchant ;
+
