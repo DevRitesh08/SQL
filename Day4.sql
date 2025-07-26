@@ -216,3 +216,40 @@ SELECT std_name ,
         ELSE 'D'
     END AS grade
 FROM student_marks;
+
+
+-- UBER INTERVIEW QUESTION
+-- A table named tree is given , that contains the following columns: node , parent . 
+-- Write a query to print the type of each node in the tree, where the type is defined as follows:
+-- 1. If the node is a root node (i.e., it has no parent), then its type is 'Root'.
+-- 2. If the node is a leaf node (i.e., it has no children), then its type is 'Leaf'.
+-- 3. If the node is neither a root nor a leaf, then its type is 'Intermediate'.
+CREATE TABLE tree (
+    node INT,
+    parent INT
+);
+
+INSERT INTO tree VALUES
+    (15 , NULL) ,
+    (12 , 15) ,
+    (17 , 15) ,
+    (11 , 12) ,
+    (14 , 12) , 
+    (20 , 17) ,
+    (16 , 17) ,
+    (10 , 11) ,
+    (13 , 11) ,
+    (8 , 14)  ,
+    (18 , 14) ;
+
+SELECT * FROM tree ;
+
+--  Query to find the type of each node in the tree
+SELECT node ,
+    CASE 
+        WHEN parent is null THEN 'Root' 
+        WHEN node IN (SELECT parent FROM tree) THEN 'Intermediate'
+        ELSE  'Leaf'
+    END as Node_Type
+FROM tree ;
+
