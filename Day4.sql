@@ -121,3 +121,173 @@ SELECT * FROM order_data WHERE state = 'Delhi' OR state = 'Texas';
 -- Method 2 : using IN operator
 SELECT * FROM order_data WHERE state IN ('Delhi', 'Texas');
 
+
+
+
+
+
+
+CREATE table customer_order_data(
+    order_id INT  AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT ,
+    supplier_id INT,
+    country VARCHAR(100) ,
+    state VARCHAR(100) 
+);
+
+INSERT INTO customer_order_data(customer_id , supplier_id , country , state) VALUES(001 , 7575 , 'USA' , 'California'),
+(002 , 7576 , 'USA' , 'Texas'),
+(003 , 7577 , 'India' , 'Delhi'),
+(004 , 7578 , 'India' , 'Mumbai'),
+(005 , 7579 , 'UK' , 'London'),
+(006 , 7580 , 'UK' , 'Manchester'),
+(007 , 7581 , 'India' , 'Delhi'),
+(008 , 7582 , 'USA' , 'California'),
+(009 , 7583 , 'India' , 'Mumbai'),
+(010 , 7584 , 'UK' , 'London');
+
+SELECT * FROM customer_order_data;
+
+
+CREATE table supplier_order_data(
+    supplier_id INT,
+    sup_country VARCHAR(100) 
+);
+
+
+INSERT INTO supplier_order_data VALUES
+(7577, 'India'),
+(7584, 'UK');
+
+SELECT * FROM supplier_order_data;
+
+-- write a query to print all the customer orders data where all customers are from the same countries as the supplier .
+SELECT * from customer_order_data WHERE cust_country IN
+(SELECT DISTINCT sup_country FROM supplier_order_data);
+
+
+
+-- case when statement
+-- case when statement is used to perform conditional logic in sql queries, it is similar to if-else statements in programming languages.
+
+
+CREATE Table student_marks (
+    std_id int PRIMARY KEY AUTO_INCREMENT , 
+    std_name VARCHAR(50) , 
+    total_marks int 
+);
+
+INSERT into student_marks(std_name , total_marks ) values(
+    'Shubham' , 90),
+    ('Aman' , 80),
+    ('Naveen' , 90),
+    ('Aditya' , 60),
+    ('Nishant' , 50),
+    ('Yukti' , 30),
+    ('Sahil' , 94),
+    ('Tushar' , 86),
+    ('Anukriti' , 68),
+    ('Ajay' , 100),
+    ('Rohan' , 85),
+    ('Sonia' , 95),
+    ('Rahul' , 75),
+    ('Priya' , 98),
+    ('Karan' , 55),
+    ('Anushka' , 25),
+    ('Bharti' , 35),
+    ('Harsh' , 65),
+    ('Megha' , 58), 
+    ('Purav' , 53);
+
+SELECT * FROM student_marks;
+
+
+-- write a query to print the student name and their grade based on their total marks .
+-- marks >= 90 : A+ , marks >= 80 : A , marks >= 70 : B+ , marks >= 60 : B , marks >= 50 : C+ , marks >= 40 : C , marks < 40 : D
+
+SELECT std_name , 
+    CASE
+        WHEN total_marks >= 90 THEN 'A+'
+        WHEN total_marks >= 80 THEN 'A'
+        WHEN total_marks >= 70 THEN 'B+'
+        WHEN total_marks >= 60 THEN 'B'
+        WHEN total_marks >= 50 THEN 'C+'
+        WHEN total_marks >= 40 THEN 'C'
+        ELSE 'D'
+    END AS grade
+FROM student_marks;
+
+
+-- UBER INTERVIEW QUESTION
+-- A table named tree is given , that contains the following columns: node , parent . 
+-- Write a query to print the type of each node in the tree, where the type is defined as follows:
+-- 1. If the node is a root node (i.e., it has no parent), then its type is 'Root'.
+-- 2. If the node is a leaf node (i.e., it has no children), then its type is 'Leaf'.
+-- 3. If the node is neither a root nor a leaf, then its type is 'Intermediate'.
+CREATE TABLE tree (
+    node INT,
+    parent INT
+);
+
+INSERT INTO tree VALUES
+    (15 , NULL) ,
+    (12 , 15) ,
+    (17 , 15) ,
+    (11 , 12) ,
+    (14 , 12) , 
+    (20 , 17) ,
+    (16 , 17) ,
+    (10 , 11) ,
+    (13 , 11) ,
+    (8 , 14)  ,
+    (18 , 14) ;
+
+SELECT * FROM tree ;
+
+--  Query to find the type of each node in the tree
+SELECT node ,
+    CASE 
+        WHEN parent is null THEN 'Root' 
+        WHEN node IN (SELECT DISTINCT parent FROM tree) THEN 'Intermediate'
+        -- or   WHEN node IN (SELECT DISTINCT parent FROM tree WHERE parent NOT NULL) THEN 'Intermediate' ==> when this is written first not the root condition .
+        ELSE  'Leaf'
+    END as Node_Type
+FROM tree ;
+
+-- Amazon Interview Question
+-- A transaction table is given with columns trx_date ,  merchant , amount , payment_mode . 
+-- Write a query to find amount received in cash and online for each merchant .
+
+CREATE Table Transaction_table (
+    trx_date DATE ,
+    merchant VARCHAR(20) ,
+    amount int ,
+    payment_mode VARCHAR(20)
+) ;
+
+INSERT INTO Transaction_table (trx_date, merchant, amount, payment_mode) VALUES
+('2025-07-10', 'm1', 1200, 'Cash'),
+('2025-07-10', 'm2', 800, 'Online'),
+('2025-07-11', 'm1', 1500, 'Online'),
+('2025-07-11', 'm3', 600, 'Cash'),
+('2025-07-12', 'm2', 950, 'Cash'),
+('2025-07-12', 'm1', 2000, 'Online'),
+('2025-07-13', 'm3', 700, 'Online'),
+('2025-07-13', 'm2', 1100, 'Cash'),
+('2025-07-14', 'm1', 1750, 'Cash'),
+('2025-07-14', 'm3', 850, 'Online'),
+('2025-07-15', 'm2', 1200, 'Online'),
+('2025-07-15', 'm1', 900, 'Cash'),
+('2025-07-16', 'm3', 1300, 'Cash'),
+('2025-07-16', 'm2', 1050, 'Online'),
+('2025-07-17', 'm1', 1600, 'Online');
+
+SELECT * FROM Transaction_table ;
+
+--  Query 
+SELECT merchant,
+    SUM( CASE WHEN payment_mode = 'Cash' THEN  amount else 0 END ) as Cash_amount ,
+    SUM( CASE WHEN payment_mode = 'Online' THEN  amount else 0  END ) as online_amount
+    FROM Transaction_table
+GROUP BY merchant ;
+
