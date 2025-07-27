@@ -291,3 +291,77 @@ SELECT merchant,
     FROM Transaction_table
 GROUP BY merchant ;
 
+
+
+
+-- Joins (imp.........)
+
+CREATE Table orders (
+    order_id INT ,
+    cust_id INT ,
+    order_date DATE ,
+    shipper_id INT  
+) ;
+
+
+
+CREATE Table customers (
+    cust_id INT ,
+    cust_name VARCHAR(20) ,
+    country VARCHAR(20) 
+) ;
+
+-- Insert data
+INSERT INTO orders (order_id, cust_id, order_date, shipper_id) VALUES
+(101, 1, '2025-07-10', 201),
+(102, 2, '2025-07-11', 202),
+(103, 3, '2025-07-12', 203),
+(104, 4, '2025-07-13', 204),
+(105, 5, '2025-07-14', 205);
+INSERT INTO customers (cust_id, cust_name, country) VALUES
+(1, 'Shubham', 'India'),
+(223, 'Aman', 'Australia'),
+(365, 'Naveen', 'Sri Lanka'),
+(4, 'Aditya', 'Austria'),
+(5, 'Nishant', 'Spain');
+
+
+SELECT * FROM customers;
+SELECT * FROM orders;
+
+
+
+-- perform inner join on customers and orders table .
+
+-- get the customer info when cust_id matches in both tables.
+--SELECT * FROM customers cust INNER JOIN orders o ON cust.cust_id = o.cust_id; -- here cust and o are aliases for customers and orders table respectively.
+SELECT o.* , cust.cust_name, cust.country FROM orders AS o  INNER JOIN  customers AS cust ON cust.cust_id = o.cust_id;
+
+
+-- perform left join on customers and orders table .
+SELECT o.* , cust.* FROM orders AS o  LEFT JOIN  customers AS cust ON cust.cust_id = o.cust_id;
+
+
+-- perform right join on customers and orders table .
+SELECT o.* , cust.* FROM orders AS o  RIGHT JOIN  customers AS cust ON cust.cust_id = o.cust_id;
+
+-- perform full outer join on customers and orders table .(ISSUE: Not all databases support FULL OUTER JOIN, so it may not work in some SQL environments)
+SELECT o.* , cust.* FROM orders AS o  FULL OUTER JOIN  customers AS cust ON cust.cust_id = o.cust_id;
+
+-- HOW to join more than two tables ?
+CREATE TABLE shippers (
+    shipper_id INT ,
+    shipper_name VARCHAR(20) 
+);
+INSERT INTO shippers VALUES
+(201, 'Shipper1'),
+(202, 'Shipper2'),
+(205, 'Shipper5');
+
+-- perform inner join
+
+-- get the customer info when cust_id matches in both tables , also get the shipper name .
+SELECT o.* , cust.* , s.* FROM orders AS o  
+INNER JOIN  customers AS cust ON cust.cust_id = o.cust_id
+INNER JOIN shippers AS s ON o.shipper_id = s.shipper_id;
+
