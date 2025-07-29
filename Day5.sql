@@ -51,10 +51,23 @@ create table amazon_sales_data
 insert into amazon_sales_data values('2022-08-21',500);
 insert into amazon_sales_data values('2022-08-22',600);
 insert into amazon_sales_data values('2022-08-19',300);
-
 insert into amazon_sales_data values('2022-08-18',200);
-
 insert into amazon_sales_data values('2022-08-25',800);
+
+
+-- Query - Calculate the date wise rolling average of amazon sales
+select * from amazon_sales_data;
+
+select *,
+       avg(sales_amount) over(order by sales_date) as rolling_avg
+from amazon_sales_data;
+
+select *,
+       avg(sales_amount) over(order by sales_date) as rolling_avg,
+       sum(sales_amount) over(order by sales_date) as rolling_sum
+from amazon_sales_data;
+
+-- Rank(), Row_Number(), Dense_Rank() window functions
 
 
 -- Query - Calculate the date wise rolling average of amazon sales
