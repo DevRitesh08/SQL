@@ -163,17 +163,37 @@ SELECT * ,
         LAG(sales_amount , 1) OVER(ORDER BY sales_date) as prevoius_day_sale
 FROM daily_sales ;
 
-# Query - Calculate the differnce of sales with previous day sales .
-# Here null will be derived
+-- Query - Calculate the differnce of sales with previous day sales .
+-- Here null will be derived
 SELECT * , 
         LAG(sales_amount , 1) OVER(ORDER BY sales_date) as previous_day_sale,
         sales_amount - LAG(sales_amount , 1) OVER(ORDER BY sales_date) as sales_diff
 FROM daily_sales;
 
-# Here we can replace null with 0
+-- Here we can replace null with 0
 -- to handle the NULL values in the previous day sales we can define the third parameter in the LAG function which will be used when there is no previous value available.
 SELECT * , 
         LAG(sales_amount , 1 , 0) OVER(ORDER BY sales_date) as previous_day_sale,
         sales_amount - LAG(sales_amount , 1 , 0) OVER(ORDER BY sales_date) as sales_diff
 FROM daily_sales;
 
+
+-- Diff between lead and lag
+select *,
+      lag(sales_amount, 1) over(order by sales_date) as pre_day_sales
+from daily_sales;
+
+select *,
+      lead(sales_amount, 1) over(order by sales_date) as next_day_sales
+from daily_sales;
+
+
+
+
+-- How to use Frame Clause  -> Rows Between 
+SELECT * FROM daily_sales ;
+
+
+SELECT * ,
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN 1 PRECEDING and 1 FOLLOWING) as prev_plus_next_sales 
+FROM daily_sales;
