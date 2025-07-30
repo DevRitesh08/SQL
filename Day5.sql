@@ -231,3 +231,29 @@ SELECT * ,
         sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING) as prev_plus_next_sales_excluding_current
 FROM daily_sales;
 
+
+
+
+
+
+-- How to work with Range Between
+
+ select *,
+      sum(sales_amount) over(order by sales_amount range between 100 preceding and 200 following) as prev_plus_next_sales_sum
+from daily_sales;
+
+-- Calculate the running sum for a week
+-- Calculate the running sum for a month
+insert into daily_sales values('2022-03-20',900);
+insert into daily_sales values('2022-03-23',200);
+insert into daily_sales values('2022-03-25',300);
+insert into daily_sales values('2022-03-29',250);
+
+
+select * from daily_sales;
+
+select *,
+       sum(sales_amount) over(order by sales_date range between interval '6' day preceding and current row) as running_weekly_sum
+from daily_sales;
+
+
