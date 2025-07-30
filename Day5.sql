@@ -197,3 +197,37 @@ SELECT * FROM daily_sales ;
 SELECT * ,
         sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN 1 PRECEDING and 1 FOLLOWING) as prev_plus_next_sales 
 FROM daily_sales;
+
+
+
+-- getting sum of sales amount of preceding day and current day sales amount for each day .
+SELECT * , 
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN 1 PRECEDING and current ROW) as prev_plus_current_sales
+FROM daily_sales;
+
+-- getting sum of sales amount of previous day and next day sales amount for each day excluding current day.
+-- exclude is not supported by all databases , so it may not work in some SQL environments.
+SELECT * ,
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN 1 PRECEDING and 1 FOLLOWING EXCLUDE CURRENT ROW) as prev_plus_next_sales_excluding_current
+FROM daily_sales;
+-- other way
+SELECT * ,
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN 1 PRECEDING and 1 FOLLOWING ) - sales_amount as prev_plus_next_sales_excluding_current
+FROM daily_sales;
+
+-- unbounded
+-- getting sum of all preceding day with the current day sales ( Running sum ) .
+SELECT * ,
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN UNBOUNDED PRECEDING and CURRENT ROW) as prev_plus_next_sales_excluding_current
+FROM daily_sales;
+
+-- getting sum of sales from current day  to all the following days . 
+SELECT * ,
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) as prev_plus_next_sales_excluding_current
+FROM daily_sales;
+
+--both unbounded
+SELECT * ,
+        sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING) as prev_plus_next_sales_excluding_current
+FROM daily_sales;
+
