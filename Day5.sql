@@ -137,3 +137,43 @@ SELECT emp.* FROM
         DENSE_RANK() OVER(PARTITION BY dept_name ORDER BY salary DESC) as dense_rank_num
     from employees) as emp
 WHERE emp.dense_rank_num <= 2;
+
+
+
+
+-- lag and lead :
+
+ create table daily_sales
+(
+sales_date date,
+sales_amount int
+);
+
+
+insert into daily_sales values('2022-03-11',400);
+insert into daily_sales values('2022-03-12',500);
+insert into daily_sales values('2022-03-13',300);
+insert into daily_sales values('2022-03-14',600);
+insert into daily_sales values('2022-03-15',500);
+insert into daily_sales values('2022-03-16',200);
+
+select * from daily_sales;
+
+SELECT * , 
+        LAG(sales_amount , 1) OVER(ORDER BY sales_date) as prevoius_day_sale
+FROM daily_sales ;
+
+# Query - Calculate the differnce of sales with previous day sales .
+# Here null will be derived
+SELECT * , 
+        LAG(sales_amount , 1) OVER(ORDER BY sales_date) as previous_day_sale,
+        sales_amount - LAG(sales_amount , 1) OVER(ORDER BY sales_date) as sales_diff
+FROM daily_sales;
+
+# Here we can replace null with 0
+-- to handle the NULL values in the previous day sales we can define the third parameter in the LAG function which will be used when there is no previous value available.
+SELECT * , 
+        LAG(sales_amount , 1 , 0) OVER(ORDER BY sales_date) as previous_day_sale,
+        sales_amount - LAG(sales_amount , 1 , 0) OVER(ORDER BY sales_date) as sales_diff
+FROM daily_sales;
+
