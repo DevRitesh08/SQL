@@ -109,5 +109,31 @@ insert into employees values(10,11000,'HR');
 
 select * from employees;
 
-# Query - get one employee from each department who is getting maximum salary (employee can be random if salary is same)
 
+-- Query - get one employee from each department who is getting maximum salary (employee can be random if salary is same)
+
+
+SELECT * , 
+        ROW_NUMBER() OVER(PARTITION BY dept_name ORDER BY salary DESC) as row_num
+from employees
+WHERE row_num = 1;
+-- its not working because we cannot use alias in the same select statement , so we can use a subquery to achieve this.
+SELECT emp.* FROM    
+    (SELECT * , 
+        ROW_NUMBER() OVER(PARTITION BY dept_name ORDER BY salary DESC) as row_num
+    from employees) as emp
+WHERE emp.row_num = 1;
+
+-- Query - get one employee from each department who are getting maximum salary .
+SELECT emp.* FROM    
+    (SELECT * , 
+        RANK() OVER(PARTITION BY dept_name ORDER BY salary DESC) as rank_num
+    from employees) as emp
+WHERE emp.rank_num = 1;
+
+-- Query - get top 2 ranked employee from each department who are getting maximum salary . 
+SELECT emp.* FROM    
+    (SELECT * , 
+        DENSE_RANK() OVER(PARTITION BY dept_name ORDER BY salary DESC) as dense_rank_num
+    from employees) as emp
+WHERE emp.dense_rank_num <= 2;
