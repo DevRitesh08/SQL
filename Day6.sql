@@ -200,7 +200,14 @@ with recursive emp_hir as
    UNION
    select em.id, em.name, em.manager_id, em.designation from emp_hir eh inner join emp_mgr em on eh.id = em.manager_id
 )
-
 select * from emp_hir;
 
 --- Print level of employees as well
+
+with recursive emp_hir as  
+(
+   select id, name, manager_id, designation, 1 as level from emp_mgr where name='Asha'
+   UNION
+   select em.id, em.name, em.manager_id, em.designation, eh.level + 1 from emp_hir eh inner join emp_mgr em on eh.id = em.manager_id
+)
+select * from emp_hir;
