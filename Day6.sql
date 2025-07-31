@@ -22,3 +22,17 @@ INSERT INTO employees (emp_id, emp_name, mobile, dept_name, salary) VALUES
 SELECT * FROM employees;
 
 -- Create views
+CREATE View software_employees AS
+SELECT * FROM employees WHERE dept_name = 'Software';
+
+CREATE View employee_data_for_finance AS
+SELECT emp_id , emp_name , salary FROM employees ;
+
+-- all operations on views are same as that of tables , we can perform select , insert , update and delete operations on views .
+SELECT * FROM employee_data_for_finance;
+-- view occupy no space in the database , they are just a logical representation of the data in the table.
+-- the above query is actually querying the underlying table, like this :
+SELECT * FROM (SELECT emp_id , emp_name , salary FROM employees);
+
+CREATE VIEW department_wise_salary AS
+SELECT dept_name , sum(salary) as total_salary FROM employees GROUP BY dept_name;
