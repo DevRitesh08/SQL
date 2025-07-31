@@ -36,3 +36,51 @@ SELECT * FROM (SELECT emp_id , emp_name , salary FROM employees);
 
 CREATE VIEW department_wise_salary AS
 SELECT dept_name , sum(salary) as total_salary FROM employees GROUP BY dept_name;
+
+-- with views we always get the latest data from the underlying tables , even if the data in the base table changes.
+-- we can not alter the data in the view directly, we have to alter the data in the base table.
+
+
+-- Union and Union All
+create table student    
+(
+    stu_id int,
+    name varchar(50), 
+    email varchar(50),  
+    city varchar(50)
+ );
+ 
+insert into student values(1,'Shashank','abc@gmail.com', 'lucknow');
+insert into student values(2,'Rahul','abc1@gmail.com', 'mp');
+insert into student values(3,'Amit','ab2@gmail.com', 'noida');
+insert into student values(4,'Nikhil','abc3@gmail.com', 'bangalore');
+insert into student values(5,'Sunny','ab4@gmail.com', 'bangalore');
+    
+create table student2
+(
+    stu_id int,
+    name varchar(50), 
+    email varchar(50), 
+    city varchar(50)
+ );
+
+
+insert into student2 values(1,'Shashank','abc@gmail.com', 'lucknow');
+insert into student2 values(6,'Anuj','abc5@gmail.com', 'mp');
+insert into student2 values(8,'Mohit','ab7@gmail.com', 'noida');
+insert into student2 values(10,'Sagar','abc10@gmail.com', 'bangalore');
+insert into student2 values(5,'Sunny','ab4@gmail.com', 'bangalore');
+    
+select * from student2;
+
+
+--- We are organizing an tournament between College-1 and College-2, we need details of all students from both college
+select * from student
+UNION
+select * from student2;
+
+--- how to use union all
+select * from student
+UNION ALL
+select * from student2;
+
