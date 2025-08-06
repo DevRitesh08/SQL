@@ -20,6 +20,12 @@ This repository is a comprehensive collection of SQL exercises and resources int
 2. Start with `Day1.sql` and proceed sequentially through the days.
 3. For an interactive experience, open `SQL.ipynb` with Jupyter Notebook.
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+### 🧾 Attribution Requirement
+
+If you use or reference this code in any form (project, blog, research, etc.), you **must** provide proper credit by:
+- Mentioning the author: [Ritesh Swami](https://github.com/DevRitesh08)
+- Including a link to this repository
