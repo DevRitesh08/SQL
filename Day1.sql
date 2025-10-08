@@ -5,7 +5,7 @@ create Database test ;
 
 --Command to show databases :
 show databases ;
-
+ 
 use sql_bootcamp;
 
 -- command to create tables
