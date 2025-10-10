@@ -148,4 +148,59 @@
     -- find all samsung phones with processor brand Exynos or Snapdragon
     SELECT * from temp.smartphones 
     where brand_name = 'Samsung' AND (processor_brand = 'Exynos' OR processor_brand = 'Snapdragon');
-    --
+    -- find brands who sell smartphones with price > 80000
+    SELECT DISTINCT brand_name from temp.smartphones 
+    where price > 80000;
+
+
+
+    -- IN and NOT IN operators
+
+    -- find all phones with brand either Apple , OnePlus or Samsung
+    SELECT * from temp.smartphones                                                        -- without using IN operator , not efficient when their are many values 
+    WHERE brand_name = 'Apple' OR brand_name = 'OnePlus' OR brand_name = 'Samsung';     
+    SELECT * from temp.smartphones                                                          -- using IN operator
+    WHERE brand_name IN ('Apple', 'OnePlus', 'Samsung');
+    -- find all phones with brand not Apple and Samsung
+    SELECT * from temp.smartphones
+    WHERE brand_name NOT IN ('Apple', 'Samsung');
+
+
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+---
+-- Update queries
+---
+
+
+    SELECT * from temp.smartphones where processor_brand = 'dimensity';
+    -- Changing processor_brand dimensity to Dimensity
+    UPDATE temp.smartphones
+    SET processor_brand = 'Dimensity'
+    WHERE processor_brand = 'dimensity';
+    SELECT * from temp.users_table;
+    -- Changing email and user_password for user_id 16
+    UPDATE temp.users_table
+    SET email = 'alice@example.com', user_password = 'alice2024'
+    WHERE user_id = 16;
+
+
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+---
+-- Delete queries
+---
+
+
+    -- Delete smartphones with price more than 200k
+    SELECT * from temp.smartphones where price > 200000;
+    DELETE from temp.smartphones where price > 200000;
+    -- Delete smartphones that has primary camera more than 100MP and brand_name is samsung
+    SELECT * from temp.smartphones where primary_camera_rear > 100 AND brand_name = 'Samsung';
+    DELETE FROM temp.smartphones where primary_camera_rear > 100 AND brand_name = 'Samsung';
+
+
+    -- Update and Delete are irreversible operations. Always take a backup before performing these operations on important data.
+    -- Use transactions to group multiple operations into a single unit of work that can be committed or rolled back as needed.
