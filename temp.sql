@@ -128,3 +128,24 @@
     SELECT * from temp.smartphones where brand_name = 'Samsung';
     -- finding all phones with price greater than 30000
     SELECT * from temp.smartphones where price > 30000;
+
+
+
+    -- Between operator
+
+    -- finding phones with price between 20000 and 40000
+    SELECT * from temp.smartphones 
+    where price BETWEEN 20000 AND 40000;
+    -- without between operator
+    -- SELECT * from temp.smartphones 
+    -- where price >= 20000 AND price <= 40000;
+    -- find all phones with rating > 80 and price between 20000 and 25000 and processor brand is Snapdragon
+    SELECT * from temp.smartphones 
+    where rating > 80 AND price > 20000 AND price < 25000 AND processor_brand = 'Snapdragon';
+    -- find all samsung phones with ram > 8
+    SELECT * from temp.smartphones 
+    where brand_name = 'Samsung' AND ram_capacity > 8;
+    -- find all samsung phones with processor brand Exynos or Snapdragon
+    SELECT * from temp.smartphones 
+    where brand_name = 'Samsung' AND (processor_brand = 'Exynos' OR processor_brand = 'Snapdragon');
+    --
