@@ -204,3 +204,116 @@
 
     -- Update and Delete are irreversible operations. Always take a backup before performing these operations on important data.
     -- Use transactions to group multiple operations into a single unit of work that can be committed or rolled back as needed.
+
+
+
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+----
+-- Functions in sql : 
+-- functions in sql are pre-defined operations that perform specific tasks on data and return a result.
+-- Their are many built-in functions available in SQL that can be used to manipulate and analyze data.
+-- They can be used in SQL queries to manipulate and analyze data.
+-- types of functions:
+-- 1. Aggregate functions : operate on a set of values and return a single value.
+-- 2. Scalar functions : operate on a single value and return a single value.
+----
+
+
+
+----- Aggregate functions
+----
+
+
+
+    -- MAX() : returns the maximum value in a column.
+
+    -- finding the most expensive smartphone
+    SELECT MAX(price) as Most_Expensive_Smartphone from temp.smartphones;
+    -- finding the smartphone with highest rating
+    SELECT MAX(rating) as Highest_Rated_Smartphone from temp.smartphones;
+    -- find the most expensive samsung smartphone
+    SELECT MAX(price) as Most_Expensive_Samsung from temp.smartphones where brand_name = 'Samsung';
+
+
+    -- MIN() : returns the minimum value in a column.
+
+    -- finding the cheapest smartphone
+    SELECT MIN(price) as Cheapest_Smartphone from temp.smartphones;
+    -- finding the smartphone with lowest rating
+    SELECT MIN(rating) as Lowest_Rated_Smartphone from temp.smartphones;   
+
+
+    -- AVG() : returns the average value in a column.
+
+    -- finding the average price of apple smartphones
+    SELECT AVG(price) as Average_Price_Apple from temp.smartphones where brand_name = 'Apple';
+
+
+    -- SUM() : returns the sum of all values in a column.
+
+    -- finding the total price of all smartphones
+    SELECT SUM(price) as Total_Price_of_Smartphones from temp.smartphones; 
+
+
+    -- COUNT() : returns the number of rows in a table or the number of non-null values in a column.
+
+    -- finding the total number of one plus smartphones
+    SELECT COUNT(*) as Total_OnePlus_Smartphones from temp.smartphones where brand_name = 'OnePlus';
+    SELECT COUNT(*) as Total_Smartphones from temp.smartphones; -- counts all rows including duplicates and nulls
+    -- counting unique non-null brand names
+    SELECT COUNT(DISTINCT(brand_name)) as Unique_Brands from temp.smartphones; -- counts unique non-null brand names
+    -- alternative way to count unique non-null brand names
+    SELECT COUNT(DISTINCT brand_name) as Unique_Brands from temp.smartphones; -- counts unique non-null brand names
+    SELECT COUNT(processor_brand) as Non_Null_Processors from temp.smartphones; -- counts non-null processor brands
+
+
+    -- STD() : returns the standard deviation of a column.
+
+    -- finding the standard deviation of smartphone screen sizes
+    SELECT STD(screen_size) as Screen_Size_Std_Dev from temp.smartphones; 
+
+
+    -- VARIANCE() : returns the variance of a column.
+
+    -- finding the variance of smartphone screen sizes
+    SELECT VARIANCE(screen_size) as Screen_Size_Variance from temp.smartphones;
+
+
+
+----- Scalar functions
+----
+
+
+
+    -- ABS() : returns the absolute value of a number.
+    
+    -- firstly let's create a table with some negative values
+    CREATE TABLE IF NOT EXISTS temp.test_numbers (
+        num INT
+    );
+    -- inserting some negative values
+    INSERT INTO temp.test_numbers VALUES (-5), (-10), (-15);
+    -- finding the absolute values
+    SELECT ABS(num) as Absolute_Value from temp.test_numbers;+
+
+
+    -- ROUND() : rounds a number to the nearest integer or to a specified number of decimal places.
+    SELECT * from temp.smartphones;
+    -- table to demonstrate ROUND function
+    CREATE TABLE IF NOT EXISTS temp.test_numbers_float (
+        num FLOAT
+    );
+    -- inserting some float values
+    INSERT INTO temp.test_numbers_float VALUES (5.67243243), (10.2313232), (15.89232);
+    -- rounding to nearest integer
+    SELECT ROUND(num) as Rounded_Value from temp.test_numbers_float;
+    -- rounding to 2 decimal place
+    SELECT ROUND(num, 2) as Rounded_Value from temp.test_numbers_float;
+
+
+    -- CEIL() : rounds a number up to the next integer. example: CEIL(4.2) = 5 , CEIL(4.8) = 5 , CEIL(-4.2) = -4 , CEIL(-4.9) = -4
+    SELECT CEIL(num) as Ceil_Value from temp.test_numbers_float;
+    -- FLOOR() : rounds a number down to the previous integer. example: FLOOR(4.2) = 4 , FLOOR(4.8) = 4 , FLOOR(-4.2) = -5 , FLOOR(-4.9) = -5
+    SELECT FLOOR(num) as Floor_Value from temp.test_numbers_float;
