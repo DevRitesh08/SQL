@@ -164,6 +164,8 @@ A right join, also known as a right outer join, is a type of join operation in S
 
 A full outer join, sometimes called a full join, is a type of join operation in SQL that returns all matching rows from both the left and right tables, as well as any non-matching rows from either table. In other words, a full outer join returns all the rows from both tables and matches rows with common values in the specified columns, and fills in NULL values for columns where there is no match.
 
+`Full join can't be performed directly in MySQL as it doesn't support FULL OUTER JOIN syntax, so we can achieve the same result using a combination of LEFT JOIN and RIGHT JOIN with UNION.`
+
 - Syntax :
 
 ```sql
@@ -246,3 +248,9 @@ A self join is a type of join operation in SQL where a table is joined with itse
     JOIN Customers c2 ON c1.country = c2.country
     WHERE c1.customer_id <> c2.customer_id;
 ```
+
+
+
+
+# Set Operations
+
