@@ -101,6 +101,73 @@ SELECT * FROM joins_db.users t1
 FULL JOIN joins_db.orders t2 
 ON t1.user_id = t2.user_id;
 
+SELECT * FROM joins_db.users t1
+FULL OUTER JOIN joins_db.orders t2 
+ON t1.user_id = t2.user_id;
+
 -- Can't be run in MySQL as it does not support FULL JOIN directly. so using UNION of LEFT JOIN and RIGHT JOIN we can achieve the same result.
 -- The FULL JOIN returns all rows when there is a match in either left (users) or right (orders) table .
 -- If there is no match , the result is NULL from the side that does not have a match .
+
+-- Example of Full Join using UNION of Left Join and Right Join
+SELECT * FROM joins_db.users t1
+LEFT JOIN joins_db.orders t2 ON t1.user_id = t2.user_id
+UNION
+SELECT * FROM joins_db.users t1
+RIGHT JOIN joins_db.orders t2 ON t1.user_id = t2.user_id;
+
+---
+-- Self Join
+----
+use joins_db;
+
+CREATE TABLE EmergencyTable (
+    user_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    age INT,
+    emergency_contact INT
+);
+
+INSERT INTO EmergencyTable (user_id, name, age, emergency_contact) VALUES
+(1, 'Nitish', 34, 11),
+(2, 'Ankit', 32, 1),
+(3, 'Neha', 23, 1),
+(4, 'Radhika', 34, 3),
+(8, 'Abhinav', 31, 11),
+(11, 'Rahul', 29, 8);
+
+
+-- Query to find users along with their emergency contact details
+SELECT * FROM joins_db.EmergencyTable t1 
+JOIN joins_db.EmergencyTable t2 
+ON t1.emergency_contact = t2.user_id;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------
+
+---
+-- Set Operations
+----
+--- Set operations are used to combine the results of two or more SQL queries into a single result set.
+-- The most common set operations are UNION, UNION ALL, INTERSECT, and EXCEPT (or MINUS in some databases).
+
+-- Union
+SELECT * FROM dump.person1
+UNION
+SELECT * FROM dump.person2;
+
+-- Union All
+SELECT * FROM dump.person1
+UNION ALL
+SELECT * FROM dump.person2;
+
+-- Intersect
+SELECT * FROM dump.person1
+INTERSECT
+SELECT * FROM dump.person2;
+
+-- Except (or Minus)
+SELECT * FROM dump.person1
+EXCEPT
+SELECT * FROM dump.person2;

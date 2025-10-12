@@ -210,7 +210,9 @@ A full outer join, sometimes called a full join, is a type of join operation in 
 
 ### Self Join
 
-A self join is a type of join operation in SQL where a table is joined with itself. This is useful when you want to compare rows within the same table or when you want to retrieve hierarchical data.
+A self join is a type of join in which a table is joined with itself. This means that the table is treated as two separate tables, with each row in the table being compared to every other row in the same table.
+
+Self joins are used when you want to compare the values of two different rows within the same table. For example, you might use a self join to compare the salaries of two employees who work in the same department, or to find all pairs of customers who have the same billing address.
 
 - Syntax :
 
@@ -236,7 +238,6 @@ A self join is a type of join operation in SQL where a table is joined with itse
     WHERE c1.customer_id <> c2.customer_id;
 ```
 
-
 ```sql
 -- retrieve Customers with the same Country and Different Customer IDs
 -- use AS alias for better code readability
@@ -249,8 +250,9 @@ A self join is a type of join operation in SQL where a table is joined with itse
     WHERE c1.customer_id <> c2.customer_id;
 ```
 
-
-
-
 # Set Operations
 
+1. **UNION**: The UNION operator is used to combine the results of two or more SELECT statements into a single result set. The UNION operator removes duplicate rows between the various SELECT statements.
+2. **UNION ALL**: The UNION ALL operator is similar to the UNION operator, but it does not remove duplicate rows from the result set.
+3. **INTERSECT**: The INTERSECT operator returns only the rows that appear in both result sets of two SELECT statements.
+4. **EXCEPT**: The EXCEPT or MINUS operator returns only the distinct rows that appear in the first result set but not in the second result set of two SELECT statements.
