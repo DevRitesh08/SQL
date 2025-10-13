@@ -175,4 +175,16 @@ SELECT  name , f_name , COUNT(*) FROM zomato.users t1
 JOIN zomato.orders t2 ON t1.user_id = t2.user_id
 JOIN zomato.order_details t3 ON t2.order_id = t3.order_id
 JOIN zomato.food t4 ON t3.f_id = t4.f_id
-GROUP BY t1.user_id , t4.f_id ;
+GROUP BY t1.user_id, t1.name, t4.f_id, t4.f_name ; -- in sql all non aggregated columns should be in group by clause because sql does not know which value to pick from those non aggregated columns
+
+-- Now from the above result we have to pick the food with max count for each user
+with fav_food AS (
+    SELECT  t2.user_id ,name, f_name , COUNT(*) AS food_count FROM zomato.users t1
+    JOIN zomato.orders t2 ON t1.user_id = t2.user_id
+    JOIN zomato.order_details t3 ON t2.order_id = t3.order_id
+    JOIN zomato.food t4 ON t3.f_id = t4.f_id
+    GROUP BY t1.user_id, t1.name, t4.f_id, t4.f_name 
+)
+SELECT * FROM fav_food t1
+WHERE food_count = (SELECT MAX(food_count) FROM fav_food t2 WHERE t1.user_id = t2.user_id);
+
