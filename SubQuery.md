@@ -37,3 +37,30 @@ Based on :
    ```
 
 ### Based on Working
+
+1. Correlated Subquery: A subquery that references columns from the outer query. It is executed once for each row processed by the outer query.
+
+   ```sql
+   SELECT name
+   FROM employees e
+   WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id);
+   ```
+
+2. Non-Correlated Subquery: A subquery that does not reference any columns from the outer query. It can be executed independently of the outer query, also known as an independent subquery.
+
+   ```sql
+   SELECT name
+   FROM employees
+   WHERE department_id IN (SELECT department_id FROM departments WHERE location_id = 1400);
+   ```
+
+
+
+## Where Subqueries can be used ?
+
+Subqueries can be used in various parts of a SQL statement, including:
+
+1. **INSERT**:
+2. **UPDATE**:
+3. **DELETE**:
+4. **SELECT**: here also subqueries can be used in various clauses like WHERE, FROM, SELECT and HAVING .
