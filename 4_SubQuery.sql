@@ -117,3 +117,43 @@ WHERE star IN (SELECT star FROM movies.movies
 ---------
 ------ independent  Subquery : Table Subquery (Multi col Multi rows ==> that is given by the inner query)
 ---------
+
+---- Question 1.
+-- Find the most profitable movie of each year
+SELECT * FROM movies.movies
+WHERE (year, (gross - budget)) IN (SELECT year, MAX(gross - budget) 
+                                    FROM movies.movies 
+                                    GROUP BY year);
+
+---- Question 2.
+-- Find the highest rated movie of each genre votes cutoff 25000
+-- first find the max score of each genre
+SELECT genre, max(score) FROM movies.movies
+where votes > 25000
+GROUP BY genre;
+-- then find the movies with those genre and score
+SELECT * FROM movies.movies
+WHERE (genre, score) IN (SELECT genre, max(score) FROM movies.movies
+                        where votes > 25000
+                        GROUP BY genre) AND votes > 25000;  
+
+---- Question 3.
+-- Find the highest grossing movies of top 5 actor/director combo in terms of total gross collection
+-- first find the top 5 actor/director combo in terms of total gross collection and also get their max grossing movie
+SELECT star, director, MAX(gross) 
+FROM movies.movies
+GROUP BY star, director 
+ORDER BY SUM(gross) DESC
+LIMIT 5;
+-- cannot use above query in subquery because of limit so we will use common table expression (CTE)
+WITH TopCombos AS (
+    SELECT star, director, MAX(gross) 
+    FROM movies.movies
+    GROUP BY star, director 
+    ORDER BY SUM(gross) DESC
+    LIMIT 5
+)
+SELECT * FROM movies.movies 
+WHERE (star, director , gross) IN (SELECT * FROM TopCombos)
+
+
