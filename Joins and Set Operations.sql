@@ -171,3 +171,60 @@ SELECT * FROM dump.person2;
 SELECT * FROM dump.person1
 EXCEPT
 SELECT * FROM dump.person2;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Joining on more than one column
+
+
+SELECT * FROM dump.students;
+SELECT * FROM dump.class;
+
+-- here we are joining on two columns class_id and enrollment_year from students table to class_id and class_year from class table
+-- to get the complete information of students along with their class details
+SELECT * FROM dump.students t1
+JOIN dump.class t2 
+ON t1.class_id = t2.class_id AND t1.enrollment_year = t2.class_year;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Joining more than two tables
+
+-- we want to add name column in orders table 
+SELECT * FROM flipkart.order_details t1 
+JOIN flipkart.orders t2
+ON t1.order_id = t2.order_id
+JOIN flipkart.users t3
+ON t2.user_id = t3.user_id;
+-- extracting only required columns
+SELECT t1.order_id , t1.amount , t1.profit , t3.name FROM flipkart.order_details t1 
+JOIN flipkart.orders t2
+ON t1.order_id = t2.order_id
+JOIN flipkart.users t3
+ON t2.user_id = t3.user_id;
+-- -- without aliasing tables it would not be possible to differentiate between columns of same name
+-- SELECT order_id , amount , profit , name FROM flipkart.order_details t1 
+-- JOIN flipkart.orders t2
+-- ON t1.order_id = t2.order_id
+-- JOIN flipkart.users t3
+-- ON t2.user_id = t3.user_id;
+
+
+-- find order_id , name and city by joining users and orders table
+SELECT t1.order_id , t2.name , t2.city FROM flipkart.orders t1
+JOIN flipkart.users t2
+ON t1.user_id = t2.user_id;
+
+-- find order_id , product category  by joining order details and category table
+SELECT order_id , vertical FROM flipkart.order_details t1
+JOIN flipkart.category t2
+ON t1.category_id = t2.category_id;
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Filtering Rows After a Join
