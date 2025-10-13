@@ -1,5 +1,5 @@
 ----
----- SubQuery
+-- SubQuery
 ----
 
 SELECT * FROM movies.movies;
@@ -31,6 +31,7 @@ ORDER BY (gross - budget) DESC LIMIT 1;
 ---- Now which query is faster ? 
 -- 2nd Query is faster on a large dataset because it uses indexing and avoids the overhead of a subquery, making it more efficient for retrieving the result. whereas the first query is slower because it has to compute the subquery for each row in the outer query, leading to increased processing time. but on a small dataset subquery is faster .
 
+
 ---- Question 2.
 -- Find how many movies have a rating > the avg of all the movie ratings (Find the count of above avg movies) .
 SELECT count(*) as above_avg_count FROM movies
@@ -50,6 +51,7 @@ ORDER BY score DESC LIMIT 1;
 SELECT * FROM movies.movies
 WHERE score = (SELECT MAX(score) FROM movies.movies WHERE votes > (SELECT AVG(votes) FROM movies.movies));  -- this is slower
 
+
 ---------
 ------ independent  Subquery : Row Subquery (One col Multi rows ==> that is given by the inner query)
 ---------
@@ -61,17 +63,17 @@ use zomato;
 SELECT * FROM zomato.users
 WHERE user_id NOT IN (SELECT DISTINCT user_id FROM zomato.orders);
 
+
 ---- Question 2.
 -- Find all movies made by top 3 directors (in terms of gross collection)
--- This query will fail in MySQL because LIMIT is not allowed in subqueries used with IN.
--- Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'LIMIT 3)' at line X
--- To fix, use a derived table or CTE as shown below.
+SELECT * FROM movies.movies
+where director IN (SELECT director FROM movies.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3) ; -- this will not work because mysql does not allow limit in subquery
 
--- Incorrect query (commented out to avoid error):
--- SELECT * FROM movies.movies
--- where director IN (SELECT director FROM movies.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3);
 
--- Corrected using derived table:
+-- Query to get top 3 directors based on total gross collection
+SELECT director FROM movies.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3;
+
+-- Join version of the above query
 SELECT m.*
 FROM movies.movies m
 JOIN (
@@ -83,16 +85,15 @@ JOIN (
 ) top_directors
 ON m.director = top_directors.director;
 
--- Using CTE (Common Table Expression):
-WITH TopDirectors AS (
-    SELECT director
-    FROM movies.movies
-    GROUP BY director
-    ORDER BY SUM(gross) DESC
-    LIMIT 3
-)
-SELECT * FROM movies.movies
+-- using common table expression (CTE)
+WITH TopDirectors AS ( SELECT director from movies.movies 
+                        GROUP BY director 
+                        ORDER BY SUM(gross) DESC 
+                        LIMIT 3 )
+SELECT * FROM movies.movies 
 WHERE director IN (SELECT director FROM TopDirectors);
+
+
 
 ---- Question 3.
 -- Find all movies of all those actors whose filmography's avg rating > 8.5 (take 25000 votes as a benchmark for a movie to be considered in avg rating calculation) .
@@ -109,6 +110,9 @@ WHERE star IN (SELECT star FROM movies.movies
                 where votes > 25000
                 GROUP BY star
                 HAVING AVG(score) > 8.5) ;
+
+
+
 
 ---------
 ------ independent  Subquery : Table Subquery (Multi col Multi rows ==> that is given by the inner query)
@@ -152,6 +156,7 @@ WITH TopCombos AS (
 SELECT * FROM movies.movies 
 WHERE (star, director , gross) IN (SELECT * FROM TopCombos)
 
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -------
@@ -188,3 +193,28 @@ with fav_food AS (
 SELECT * FROM fav_food t1
 WHERE food_count = (SELECT MAX(food_count) FROM fav_food t2 WHERE t1.user_id = t2.user_id);
 
+------------
+-----------
+-- till now we have just used subqueries in WHERE clause.
+
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------- Now we will see how to use subqueries in SELECT and FROM clause
+-------------------------------------------------------------------------------------------------------------------------------------
+
+-----------
+-- Subquery in SELECT clause
+-----------
+
+---- Question 1.
+-- Get the percentage of votes for each movie compared to the total number of votes .
+
+
+
+
+
+---- Question 2.
+-- Display all movie names , genre , score and avg(score) of genre 
