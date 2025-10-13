@@ -228,3 +228,67 @@ ON t1.category_id = t2.category_id;
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Filtering Rows After a Join
+
+
+-- find all the orders placed from pune city    
+SELECT t1.order_id , t2.name , t2.city FROM flipkart.orders t1
+JOIN flipkart.users t2
+ON t1.user_id = t2.user_id
+WHERE t2.city = 'Pune';
+
+-- find all orders under chair category
+SELECT t1.order_id , t2.vertical FROM flipkart.order_details t1
+JOIN flipkart.category t2
+ON t1.category_id = t2.category_id
+WHERE t2.vertical = 'Chairs';
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+------
+-- Practice Questions
+------
+
+-- 1. Find all profitable users 
+
+SELECT t1.order_id , SUM(t2.profit) as Total_Profit FROM flipkart.orders t1
+JOIN flipkart.order_details t2
+ON t1.order_id = t2.order_id
+GROUP BY t1.order_id
+HAVING Total_Profit > 0;
+
+-- 2. Find the customer name who has placed Max number of orders
+SELECT name, COUNT(*) as number_of_orders 
+FROM flipkart.users t1
+JOIN flipkart.orders t2
+ON t1.user_id = t2.user_id
+GROUP BY t1.user_id, t1.name        -- grouping by both user_id and name to avoid ambiguity in case of same names
+ORDER BY number_of_orders DESC
+LIMIT 1;
+
+-- 3. Which is the most profitable category
+SELECT t2.category, SUM(t1.profit) as Total_Profit  FROM flipkart.order_details t1
+JOIN flipkart.category t2
+ON t1.category_id = t2.category_id
+GROUP BY t2.category_id, t2.category
+ORDER BY Total_Profit DESC
+LIMIT 1;
+-- 4. Which is the most profitable state 
+SELECT t3.state, SUM(t2.profit) as Total_Profit  FROM flipkart.orders t1
+JOIN flipkart.order_details t2
+ON t1.order_id = t2.order_id
+JOIN flipkart.users t3
+ON t1.user_id = t3.user_id
+GROUP BY t3.state
+ORDER BY Total_Profit DESC
+LIMIT 1;
+
+-- 5. find categories with profit higher than 2000
+SELECT t2.category, SUM(t1.profit) as Total_Profit  FROM flipkart.order_details t1
+JOIN flipkart.category t2
+ON t1.category_id = t2.category_id
+GROUP BY t2.category_id, t2.category
+HAVING Total_Profit > 2000
+ORDER BY Total_Profit DESC;
