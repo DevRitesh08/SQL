@@ -202,7 +202,7 @@ WHERE food_count = (SELECT MAX(food_count) FROM fav_food t2 WHERE t1.user_id = t
 
 
 
---------------------------------------------------------------------------------------------------------------------------------------- Now we will see how to use subqueries in SELECT and FROM clause
+-------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------------------------
 
 -----------
@@ -211,10 +211,20 @@ WHERE food_count = (SELECT MAX(food_count) FROM fav_food t2 WHERE t1.user_id = t
 
 ---- Question 1.
 -- Get the percentage of votes for each movie compared to the total number of votes .
-
-
-
-
+SELECT name , (votes/(SELECT SUM(votes) FROM movies.movies)) * 100 AS vote_percentage
+FROM movies.movies;
+-- here it is not a correlated subquery because the inner query is not dependent on the outer query , and we can just use the sum of votes directly in the outer query because it is a single value
 
 ---- Question 2.
 -- Display all movie names , genre , score and avg(score) of genre 
+SELECT name , genre , score , (SELECT ROUND(AVG(score), 2) FROM movies.movies m2 WHERE m1.genre = m2.genre) AS avg_genre_score
+FROM movies.movies m1;
+
+-----------
+-- Subquery in FROM clause
+-----------
+
+-- Question 1.
+-- display average rating of all the restaurants .
+
+
