@@ -208,6 +208,7 @@ WHERE food_count = (SELECT MAX(food_count) FROM fav_food t2 WHERE t1.user_id = t
 -----------
 -- Subquery in SELECT clause
 -----------
+-- subquery in select clause is always a correlated subquery because it is dependent on the outer query and it is highly inefficient because for each row of outer query the inner query will be executed
 
 ---- Question 1.
 -- Get the percentage of votes for each movie compared to the total number of votes .
@@ -226,5 +227,53 @@ FROM movies.movies m1;
 
 -- Question 1.
 -- display average rating of all the restaurants .
+use zomato;
+SELECT r_name, avg_rating 
+FROM  (SELECT r_id , ROUND(AVG(restaurant_rating), 2) AS avg_rating 
+        FROM orders
+        GROUP BY r_id) t1 JOIN restaurants t2
+        ON t1.r_id = t2.r_id;
 
 
+-----------
+-- Subquery in HAVING clause
+-----------
+
+-- Question 1.
+-- Find genres having avg score > avg score of all the movies 
+SELECT genre, AVG(score) AS avg_genre_score
+FROM movies.movies
+GROUP BY genre
+HAVING avg_genre_score > (SELECT AVG(score) FROM movies.movies);
+
+
+-----------
+-- Subquery in INSERT clause
+-----------
+
+
+-- Question 1.
+-- Create a new table loyal_customers with records only those customers who have placed more than 3 orders.
+use zomato;
+CREATE TABLE zomato.loyal_customers(
+    user_id INT,
+    name VARCHAR(100),
+    money_spent DECIMAL(10,2)
+);
+
+INSERT INTO zomato.loyal_customers (user_id, name)         -- not gonna use values because we have to insert multiple records
+SELECT t1.user_id , name 
+FROM zomato.orders t1
+JOIN zomato.users t2 ON t1.user_id = t2.user_id
+GROUP BY user_id , name
+HAVING COUNT(*) > 3 ;
+
+SELECT * FROM zomato.loyal_customers;
+
+
+
+-----------
+-- Subquery in UPDATE clause
+-----------
+
+-- Question 1.
