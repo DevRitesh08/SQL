@@ -6,10 +6,12 @@ Below are the **main components** with simple explanations and examples:
 ---
 
 ## **1️⃣ Database Engine**
+
 **Definition:**  
 The **Database Engine** is the **core part of DBMS** that stores, retrieves, and manages data in the database.  
 
 **Functions:**  
+
 - Handles all **read and write operations** (like `SELECT`, `INSERT`, `UPDATE`, `DELETE`).  
 - Ensures **data consistency**, **integrity**, and **transaction control**.  
 
@@ -22,10 +24,12 @@ Responsible for actual data processing — similar to the “heart” of the DBM
 ---
 
 ## **2️⃣ Security and Access Control**
+
 **Definition:**  
 Manages **who can access** the database and **what operations** they can perform.  
 
 **Functions:**  
+
 - Sets **user roles and permissions** (like admin, user, guest).  
 - Prevents **unauthorized access** to sensitive data.  
 
@@ -38,10 +42,12 @@ Used in banks, hospitals, or companies to ensure **data privacy and protection**
 ---
 
 ## **3️⃣ Backup and Recovery**
+
 **Definition:**  
 Ensures that data is **not lost** during system crashes or failures by creating **backups** and restoring them when needed.  
 
 **Functions:**  
+
 - Creates automatic or manual **backups**.  
 - Performs **data recovery** after crashes or corruption.  
 
@@ -54,11 +60,13 @@ Critical for maintaining **data safety and business continuity**.
 ---
 
 ## **4️⃣ Data Dictionary**
+
 **Definition:**  
 A **Data Dictionary** stores **metadata** — which means “data about data.”  
 It describes the structure, relationships, and constraints of the database.  
 
 **Functions:**  
+
 - Stores table names, field types, and relationships.  
 - Keeps track of constraints (like primary keys, foreign keys).  
 
@@ -71,10 +79,12 @@ Used by the DBMS to **understand the schema** and ensure data is used correctly.
 ---
 
 ## **5️⃣ User Interface**
+
 **Definition:**  
 The **User Interface (UI)** allows users to **interact** with the DBMS easily through command lines or graphical tools.  
 
 **Types:**  
+
 - **Command Line Interface (CLI):** e.g., MySQL CLI  
 - **Graphical User Interface (GUI):** e.g., MySQL Workbench, pgAdmin  
 
