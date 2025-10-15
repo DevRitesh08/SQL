@@ -258,7 +258,7 @@ use zomato;
 CREATE TABLE zomato.loyal_customers(
     user_id INT,
     name VARCHAR(100),
-    money_spent DECIMAL(10,2)
+    money DECIMAL(10,2)
 );
 
 INSERT INTO zomato.loyal_customers (user_id, name)         -- not gonna use values because we have to insert multiple records
@@ -271,9 +271,28 @@ HAVING COUNT(*) > 3 ;
 SELECT * FROM zomato.loyal_customers;
 
 
-
 -----------
 -- Subquery in UPDATE clause
 -----------
 
 -- Question 1.
+-- populate the money column of loyal_customers table using the orders table . Provide a 10% app money based on their order value 
+UPDATE loyal_customers SET money  = (SELECT  SUM(amount)*0.1 as app_money  
+                                        FROM zomato.orders
+                                        WHERE orders.user_id = loyal_customers.user_id);
+
+
+
+
+-----------
+-- Subquery in DELETE clause
+-----------
+
+use zomato;
+-- Question 1. 
+-- Delete all customers record who have never ordered .
+DELETE FROM users
+where user_id IN (SELECT user_id from zomato.users
+where user_id NOT IN (SELECT DISTINCT(user_id) from orders));
+
+SELECT * FROM zomato.users
