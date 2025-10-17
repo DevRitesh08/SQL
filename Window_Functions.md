@@ -17,3 +17,6 @@ This makes it possible to, for example, calculate running totals, ranks, or movi
 
 **Summary:**  
 Window functions are powerful tools in SQL for performing calculations based on related rows, using flexible partitioning and ordering with the `OVER()` clause.
+
+## Aggregate Functions with over()
+
