@@ -93,3 +93,16 @@ SELECT COALESCE(column_name, 'default_value') FROM table_name;
   - it is irreversible; once a table is dropped, it cannot be recovered.
   - it is a DDL (Data Definition Language) command.
   - it is a DDL (Data Definition Language) command.
+
+## NON - EQUI JOINS
+
+`Till now we have only seen equi joins where we use = operator to join two tables`
+A non-equi join is a type of join that does not use the equality operator (=) to match rows between two tables. Instead, it uses other comparison operators such as <, >, <=, >=, or <> to establish the relationship between the tables.
+
+use cases of non-equi joins:
+
+1. Range-based joins: When you want to join two tables based on a range of values, such as joining a table of employees with a table of salary ranges to find out which employees fall within each salary range.
+2. Inequality joins: When you want to join two tables based on an inequality condition, such as joining a table of products with a table of discounts to find out which products are eligible for a discount based on their price.
+3. Date-based joins: When you want to join two tables based on a date range, such as joining a table of orders with a table of promotions to find out which orders were placed during a specific promotion period.
+4. Spatial joins: When you want to join two tables based on spatial relationships, such as joining a table of locations with a table of regions to find out which locations fall within each region.
+5. Custom business logic: When you have specific business rules that require non-equality conditions to join tables, such as joining a table of customers with a table of loyalty programs based on their spending patterns.
