@@ -20,3 +20,14 @@ Window functions are powerful tools in SQL for performing calculations based on 
 
 ## Aggregate Functions with over()
 
+when we use aggregate functions with over() clause it becomes window function
+
+```sql
+SELECT AVG(cgpa) OVER (PARTITION BY branch) as avg_cgpa_branch
+FROM temp.students;
+```
+
+This query calculates the average CGPA for each branch without collapsing the rows, thanks to the window function. so each student row will have the average CGPA of their respective branch.
+
+## Frames
+

@@ -188,3 +188,29 @@ ORDER BY month_name DESC;
 
 
 ------------------------------------  FIRST_VALUE() , LAST_VALUE() and NTH_VALUE()
+
+
+
+
+--------
+---- FIRST_VALUE()
+--------
+
+
+
+---- Question ----
+-- find the student with max cgpa
+SELECT * , FIRST_VALUE(name) OVER(ORDER BY cgpa DESC) as max_cgpa_student FROM temp.students ;
+
+
+
+--------
+---- LAST_VALUE()
+--------
+
+
+
+---- Question ----
+-- find the student with min cgpa
+SELECT * , LAST_VALUE(name) OVER(ORDER BY cgpa ASC) as min_cgpa_student FROM temp.students ; -- this may not work as expected because window frame by default is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+-- to make it work as expected we need to change the window frame to UNBOUNDED
