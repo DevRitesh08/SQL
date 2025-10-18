@@ -195,6 +195,9 @@ ORDER BY month_name DESC;
 --------
 ---- FIRST_VALUE()
 --------
+-- FIRST_VALUE() function returns the first value in an ordered set of values.
+-- It is often used in conjunction with the OVER() clause to define a window or partition of data.
+-- syntax: FIRST_VALUE(column_name) OVER (PARTITION BY column_name ORDER BY column_name ASC|DESC)
 
 
 
@@ -207,6 +210,9 @@ SELECT * , FIRST_VALUE(name) OVER(ORDER BY cgpa DESC) as max_cgpa_student FROM t
 --------
 ---- LAST_VALUE()
 --------
+-- LAST_VALUE() function returns the last value in an ordered set of values.
+-- It is often used in conjunction with the OVER() clause to define a window or partition of data.
+-- syntax: LAST_VALUE(column_name) OVER (PARTITION BY column_name ORDER BY column_name ASC|DESC)
 
 
 
