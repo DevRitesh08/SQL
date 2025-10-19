@@ -289,9 +289,9 @@ WHERE t.topper_name = t.name;   -- but not good for cases where name are duplica
 -- Find the least scorer in each branch 
 SELECT name , branch , cgpa FROM (
                 SELECT * , LAST_VALUE(name) OVER(PARTITION BY branch ORDER BY cgpa DESC 
-                                                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED) as topper_name ,
+                                                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as topper_name ,
                 LAST_VALUE(branch) OVER(PARTITION BY branch ORDER BY cgpa DESC 
-                                                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED) as topper_branch
+                                                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as topper_branch
                 FROM temp.students
 ) t
 WHERE t.topper_name = t.name;
@@ -302,8 +302,37 @@ SELECT name , branch , cgpa FROM (
                 FROM temp.students
 ) t
 WHERE t.topper_name = t.name
-WINDOW w as AS (PARTITION BY branch ORDER BY cgpa DESC 
+WINDOW w AS (PARTITION BY branch ORDER BY cgpa DESC 
                 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED);
+
+-- The error message near ) at line 8 happens because:
+
+-- You placed the WINDOW clause after the WHERE clause, which is not allowed in SQL syntax.
+
+-- In standard SQL, the correct order is:
+
+-- SELECT
+-- FROM
+-- WINDOW
+-- WHERE
+-- GROUP BY
+-- HAVING
+-- ORDER BY
+
+SELECT name, branch, cgpa
+FROM (
+    SELECT *,
+        LAST_VALUE(name) OVER w AS topper_name,
+        LAST_VALUE(branch) OVER w AS topper_branch
+    FROM temp.students
+    WINDOW w AS (
+        PARTITION BY branch 
+        ORDER BY cgpa DESC
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    )
+) t
+WHERE t.topper_name = t.name;
+
 
 ---- Question ----
 -- Find the student name , branch and cgpa who is just above the average cgpa of their branch.
@@ -330,11 +359,17 @@ WHERE t.cgpa > t.avg_cgpa_branch AND t.rank_cgpa_branch = 1 + (SELECT COUNT(*)
 --------
 ---- LAG
 --------
+-- LAG() function provides access to a row at a specified physical offset that comes before the current row within the partition.
+-- It is often used in conjunction with the OVER() clause to define a window or partition of data.
+-- syntax: LAG(column_name, offset, default_value) OVER (PARTITION BY column_name ORDER BY column_name ASC|DESC)
+-- offset is optional and default is 1
+-- default_value is optional and default is NULL
 
 
 
----- Question ---- 
--- 
+
+---- Question ----
+-- Find the previous cgpa of each student
 SELECT * , LAG(cgpa) OVER(ORDER BY id) from temp.students;
 
 
@@ -342,16 +377,22 @@ SELECT * , LAG(cgpa) OVER(ORDER BY id) from temp.students;
 --------
 ---- LEAD
 --------
+-- LEAD() function provides access to a row at a specified physical offset that follows the current row within the partition.
+-- It is often used in conjunction with the OVER() clause to define a window or partition of data.
+-- syntax: LEAD(column_name, offset, default_value) OVER (PARTITION BY column
+-- offset is optional and default is 1
+-- default_value is optional and default is NULL
 
 
 
----- Question ---- 
--- 
+
+---- Question ----
+-- Find the next cgpa of each student
 SELECT * , LAG(cgpa) OVER(ORDER BY id) AS lag_cgpa_by_1, lead(cgpa) OVER(ORDER BY id) AS lead_cgpa_by_1 from temp.students;
 
 
 ---- Question ----
---
+-- Find the previous and next cgpa of each student in their respective branch
 SELECT * , LAG(cgpa) OVER(PARTITION BY branch ORDER BY id) AS lag_cgpa_by_1, lead(cgpa) OVER(PARTITION BY branch ORDER BY id) AS lead_cgpa_by_1 from temp.students;
 
 
