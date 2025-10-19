@@ -493,4 +493,18 @@ SELECT * FROM
 -- For example, a running average of a batsman's runs scored over a window of 10 matches will calculate the average runs scored in the last 10 matches, then move the window one match forward and recalculate the average for the new set of 10 matches, and so on.
 -- Running averages are often used in finance, economics, and engineering to smooth out noisy or volatile data series, and to identify trends or patterns that may be obscured by random fluctuations in the data.
 
- 
+
+---- Question ----
+-- Find running average of runs scored by 'V Kohli' after each match with a window of 10 matches.
+ SELECT * FROM 
+                (SELECT CONCAT("Match-" , ROW_NUMBER() OVER(ORDER BY ID)) as 'Match_no' ,
+                        SUM(batsman_run) as 'Runs_Scored' ,
+                        SUM(SUM(batsman_run)) OVER w as 'Career_Runs' ,
+                        AVG(SUM(batsman_run)) OVER w as 'Cumulative_Average_Runs' ,
+                        AVG(SUM(batsman_run)) OVER(ORDER BY ID ROWS BETWEEN 9 PRECEDING AND CURRENT ROW) as 'Running_Average_Runs'
+                FROM temp.ipl_complete
+                WHERE batter = 'V Kohli' 
+                GROUP BY ID 
+                WINDOW w as (ORDER BY ID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)      -- useful when  
+                ) t
+                -- plotted this in window_function.ipymnb notebook for better understanding
