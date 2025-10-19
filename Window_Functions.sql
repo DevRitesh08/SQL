@@ -410,3 +410,59 @@ ORDER BY MONTH(date)
 
 ---- Question ----
 -- Find cummulative sum in students table for cgpa 
+
+
+
+
+
+------------------------------------  RANKING 
+
+SELECT * FROM temp.ipl_complete ;
+
+---- Question ----
+-- Find the rank (dense_rank) of top 5 players of each team based on total runs scored .
+SELECT * FROM (
+    SELECT  BattingTeam , batter , SUM(batsman_run) as total_runs , DENSE_RANK() OVER(PARTITION BY BattingTeam ORDER BY SUM(batsman_run) DESC) as 'rank_in_team'
+    FROM temp.ipl_complete
+    GROUP BY BattingTeam , batter
+) t
+WHERE t.rank_in_team <= 5
+ORDER BY BattingTeam , rank_in_team;
+
+
+
+
+
+------------------------------------  Cumulative Sum 
+-- Cumulative sum is the running total of a sequence of numbers , updated each time a new number is added to the sequence.
+-- It is calculated by adding each number in the sequence to the sum of all previous numbers.
+
+
+---- Question ----
+-- Find career runs of 'V Kohli' after 50th , 100th , 150th and 200th match .
+SELECT * FROM 
+                (SELECT CONCAT("Match-" , ROW_NUMBER() OVER(ORDER BY ID)) as 'Match_no' , SUM(batsman_run) as 'Runs_Scored' , SUM(SUM(batsman_run)) OVER(ORDER BY ID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as 'Career_Runs'
+                FROM temp.ipl_complete
+                WHERE batter = 'V Kohli' 
+                GROUP BY ID ) t
+WHERE t.Match_no IN ('Match-50' , 'Match-100' , 'Match-150' , 'Match-200');
+
+
+---- Question ----
+-- Find total number of matches played by virat kohli to reach 5000 runs .
+SELECT * FROM 
+                (SELECT CONCAT("Match-" , ROW_NUMBER() OVER(ORDER BY ID)) as 'Match_no' , SUM(batsman_run) as 'Runs_Scored' , SUM(SUM(batsman_run)) OVER(ORDER BY ID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) as 'Career_Runs'
+                FROM temp.ipl_complete
+                WHERE batter = 'V Kohli' 
+                GROUP BY ID ) t
+WHERE t.Career_Runs >= 5000
+ORDER BY t.Career_Runs
+LIMIT 1;
+
+
+
+
+
+------------------------------------  Cumulative Average
+-- Cumulative average is the running average of a sequence of numbers , updated each time a new number is added to the sequence.
+-- It is calculated by adding each number in the sequence to the sum of all previous numbers and dividing by the count of numbers in the sequence up to that point.
