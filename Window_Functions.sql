@@ -313,11 +313,11 @@ WINDOW w AS (PARTITION BY branch ORDER BY cgpa DESC
 
 -- SELECT
 -- FROM
--- WINDOW
 -- WHERE
 -- GROUP BY
 -- HAVING
 -- ORDER BY
+-- WINDOW
 
 SELECT name, branch, cgpa
 FROM (
@@ -466,3 +466,31 @@ LIMIT 1;
 ------------------------------------  Cumulative Average
 -- Cumulative average is the running average of a sequence of numbers , updated each time a new number is added to the sequence.
 -- It is calculated by adding each number in the sequence to the sum of all previous numbers and dividing by the count of numbers in the sequence up to that point.
+
+
+
+---- Question ----
+-- Find cumulative average of runs scored by 'V Kohli' after each match .
+SELECT * FROM 
+                (SELECT CONCAT("Match-" , ROW_NUMBER() OVER(ORDER BY ID)) as 'Match_no' ,
+                        SUM(batsman_run) as 'Runs_Scored' ,
+                        SUM(SUM(batsman_run)) OVER w as 'Career_Runs' ,
+                        AVG(SUM(batsman_run)) OVER w as 'Cumulative_Average_Runs' 
+                FROM temp.ipl_complete
+                WHERE batter = 'V Kohli' 
+                GROUP BY ID 
+                WINDOW w as (ORDER BY ID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)      -- useful when  
+                ) t
+
+
+
+
+
+------------------------------------  Running Average
+
+-- Running average (also known as *moving average*) is a statistical technique that calculates the average value of a dataset over a moving window of consecutive data points.
+-- The window size determines the number of data points used to calculate the average, and as the window moves forward in time, the average is recalculated using the new data points and dropping the oldest one. This means that the running average is continuously updated and reflects the most recent trends in the data.
+-- For example, a running average of a batsman's runs scored over a window of 10 matches will calculate the average runs scored in the last 10 matches, then move the window one match forward and recalculate the average for the new set of 10 matches, and so on.
+-- Running averages are often used in finance, economics, and engineering to smooth out noisy or volatile data series, and to identify trends or patterns that may be obscured by random fluctuations in the data.
+
+ 
