@@ -75,7 +75,8 @@ To find the student with the minimum CGPA:
 SELECT *, LAST_VALUE(name) OVER(ORDER BY cgpa ASC) AS min_cgpa_student
 FROM temp.students;
 -- Note: By default, the frame is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW,
--- so you may need to adjust the frame for correct results.
+-- to make it work as expected we need to change the window frame to UNBOUNDED FOLLOWING 
+SELECT * , LAST_VALUE(name) OVER(ORDER BY cgpa ASC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as min_cgpa_student FROM temp.students ;
 ```
 
 ---

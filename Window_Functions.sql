@@ -188,6 +188,8 @@ ORDER BY month_name DESC;
 
 
 ------------------------------------  FIRST_VALUE() , LAST_VALUE() and NTH_VALUE()
+-- they are used to get specific values from ordered set of rows within a partition, they won't work properly without ORDER BY .
+-- ordering is done based on some column(s) specified in ORDER BY clause inside OVER() .
 
 
 
@@ -206,6 +208,11 @@ ORDER BY month_name DESC;
 SELECT * , FIRST_VALUE(name) OVER(ORDER BY cgpa DESC) as max_cgpa_student FROM temp.students ;
 
 
+---- Question ----
+-- find the student with max cgpa in each branch
+SELECT * , FIRST_VALUE(name) OVER(PARTITION BY branch ORDER BY cgpa DESC) as max_cgpa_student_branch FROM temp.students ;
+
+
 
 --------
 ---- LAST_VALUE()
@@ -218,5 +225,147 @@ SELECT * , FIRST_VALUE(name) OVER(ORDER BY cgpa DESC) as max_cgpa_student FROM t
 
 ---- Question ----
 -- find the student with min cgpa
-SELECT * , LAST_VALUE(name) OVER(ORDER BY cgpa ASC) as min_cgpa_student FROM temp.students ; -- this may not work as expected because window frame by default is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
--- to make it work as expected we need to change the window frame to UNBOUNDED
+SELECT * , LAST_VALUE(name) OVER(ORDER BY cgpa ASC) as min_cgpa_student FROM temp.students ; -- this may not work as expected because window frame by default is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW ==>> can also change the order to DESC and use FIRST_VALUE instead of LAST_VALUE like below
+SELECT * , FIRST_VALUE(name) OVER(ORDER BY cgpa DESC) as min_cgpa_student FROM temp.students ;
+
+-- to make it work as expected we need to change the window frame to UNBOUNDED FOLLOWING 
+SELECT * , LAST_VALUE(name) OVER(ORDER BY cgpa ASC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as min_cgpa_student FROM temp.students ;
+
+
+---- Question ----
+-- find the student with min cgpa in each branch
+SELECT * , LAST_VALUE(name) OVER(PARTITION BY branch ORDER BY cgpa ASC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as min_cgpa_student_branch FROM temp.students ;
+
+
+
+--------
+---- LAST_VALUE()
+--------
+-- NTH_VALUE() function returns the nth value in an ordered set of values.
+-- It is often used in conjunction with the OVER() clause to define a window or partition of data.
+-- syntax: NTH_VALUE(column_name, n) OVER (PARTITION BY column_name ORDER BY column_name ASC|DESC)
+
+
+
+---- Question ----
+-- find the student with 2nd highest cgpa 
+SELECT * , NTH_VALUE(name, 2) OVER(ORDER BY cgpa DESC) as second_highest_cgpa_student FROM temp.students ;
+
+
+-- checking total number of students in each branch
+-- SELECT branch , count(*) as total_students FROM temp.students GROUP BY branch
+
+
+---- Question ----
+-- find the student with 16th highest cgpa in each branch (then civil branch will have NULL as there are only 15 students in civil branch)
+SELECT * , NTH_VALUE(name, 16) OVER(PARTITION BY branch ORDER BY cgpa DESC ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as sixteenth_highest_cgpa_student_branch FROM temp.students ;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------- QUESTION's
+
+
+---- Question ----
+-- Print the topper name , branch and cgpa for each branch.
+SELECT name , branch , cgpa FROM (
+                SELECT * , FIRST_VALUE(name) OVER(PARTITION BY branch ORDER BY cgpa DESC) as topper_name,
+                FIRST_VALUE(branch) OVER(PARTITION BY branch ORDER BY cgpa DESC) as topper_branch
+                FROM temp.students
+) t
+WHERE t.topper_name = t.name;
+-- or simply
+SELECT name , branch , cgpa FROM (
+                    SELECT 
+                    name,
+                    branch,
+                    cgpa,
+                    FIRST_VALUE(name) OVER (PARTITION BY branch ORDER BY cgpa DESC) AS topper_name
+                    FROM temp.students
+) t
+WHERE t.topper_name = t.name;   -- but not good for cases where name are duplicate
+
+
+---- Question ----
+-- Find the least scorer in each branch 
+SELECT name , branch , cgpa FROM (
+                SELECT * , LAST_VALUE(name) OVER(PARTITION BY branch ORDER BY cgpa DESC 
+                                                    ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED) as topper_name ,
+                LAST_VALUE(branch) OVER(PARTITION BY branch ORDER BY cgpa DESC 
+                                                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED) as topper_branch
+                FROM temp.students
+) t
+WHERE t.topper_name = t.name;
+-- here we can observe that the query is too big and we are repeating the part in over function so here we can also write it as :- 
+SELECT name , branch , cgpa FROM (
+                SELECT * , LAST_VALUE(name) OVER w as 'topper_name' ,
+                LAST_VALUE(branch) OVER w as 'topper_branch'
+                FROM temp.students
+) t
+WHERE t.topper_name = t.name
+WINDOW w as AS (PARTITION BY branch ORDER BY cgpa DESC 
+                ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED);
+
+---- Question ----
+-- Find the student name , branch and cgpa who is just above the average cgpa of their branch.
+SELECT * FROM (
+    SELECT *,
+    AVG(cgpa) OVER(PARTITION BY branch) as avg_cgpa_branch,
+    RANK() OVER(PARTITION BY branch ORDER BY cgpa DESC) as rank_cgpa_branch
+    FROM temp.students
+) t
+WHERE t.cgpa > t.avg_cgpa_branch AND t.rank_cgpa_branch = 1 + (SELECT COUNT(*) 
+                                                                FROM temp.students s2 
+                                                                WHERE s2.branch = t.branch AND s2.cgpa <= t.avg_cgpa_branch
+                                                                );
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------  LEAD() and LAG()
+
+
+
+--------
+---- LAG
+--------
+
+
+
+---- Question ---- 
+-- 
+SELECT * , LAG(cgpa) OVER(ORDER BY id) from temp.students;
+
+
+
+--------
+---- LEAD
+--------
+
+
+
+---- Question ---- 
+-- 
+SELECT * , LAG(cgpa) OVER(ORDER BY id) AS lag_cgpa_by_1, lead(cgpa) OVER(ORDER BY id) AS lead_cgpa_by_1 from temp.students;
+
+
+---- Question ----
+--
+SELECT * , LAG(cgpa) OVER(PARTITION BY branch ORDER BY id) AS lag_cgpa_by_1, lead(cgpa) OVER(PARTITION BY branch ORDER BY id) AS lead_cgpa_by_1 from temp.students;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------- QUESTION's
+
+
+---- Question ----
+-- Find the MoM revenue growth of zomato 
+SELECT MONTHNAME(date) , SUM(amount) , ((SUM(amount) - LAG( SUM(amount)) OVER(ORDER BY MONTH(date)) ) / LAG( SUM(amount)) OVER(ORDER BY MONTH(date)) ) * 100 AS 'MoM revanue'
+FROM zomato.orders
+GROUP BY MONTHNAME(date) , MONTH(date) 
+ORDER BY MONTH(date) 
+
+
+---- Question ----
+-- Find cummulative sum in students table for cgpa 
