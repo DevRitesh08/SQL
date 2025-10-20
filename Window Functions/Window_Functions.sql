@@ -596,3 +596,105 @@ FROM temp.students;
 SELECT * , PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY marks) OVER(PARTITION BY branch) AS median_marks_branch
 FROM temp.students;
 
+
+---- Question ----
+-- Remove outliers from students table based on marks using IQR method .
+SELECT * FROM (SELECT * , 
+percentile_cont(0.25) WITHIN GROUP (ORDER BY marks) OVER() AS Q1,
+percentile_cont(0.75) WITHIN GROUP (ORDER BY marks) OVER() AS Q3
+FROM temp.students) t
+WHERE t.marks > t.Q1 - (1.5*(t.Q3 - t.Q1)) AND t.marks < t.Q3 + (1.5*(t.Q3 - t.Q1))
+ORDER BY id ;
+
+
+---- Question ----
+-- Find the outliers from students table based on marks using IQR method .
+SELECT * FROM (SELECT * , 
+percentile_cont(0.25) WITHIN GROUP (ORDER BY marks) OVER() AS Q1,
+percentile_cont(0.75) WITHIN GROUP (ORDER BY marks) OVER() AS Q3
+FROM temp.students) t
+WHERE t.marks <= t.Q1 - (1.5*(t.Q3 - t.Q1)) OR t.marks >= t.Q3 + (1.5*(t.Q3 - t.Q1))
+ORDER BY id ;
+
+
+
+
+------------------------------------  Segmentation Using NTILE()
+-- Segmentation using NTILE is a technique in SQL for dividing a dataset into equal-sized groups based on some criteria or conditions, and then performing calculations or analysis on each group separately using window functions.
+-- The NTILE() function is used to divide the dataset into a specified number of groups or tiles, and assigns a unique group number to each row based on its position in the ordered set of rows within the partition.
+-- The syntax for using NTILE() function is as follows:
+-- NTILE(n) OVER (PARTITION BY column_name ORDER BY column_name ASC|DESC)
+-- where n is the number of groups or tiles to divide the dataset into, and column_name is the column used to partition and order the data.
+-- data is divided into n groups, with each group containing approximately the same number of rows. If the total number of rows is not evenly divisible by n, then it will distribute the remaining rows from the starting bucket .
+
+
+
+
+---- Question ----
+-- Divide students into 3 quartiles based on their marks .
+SELECT * , 
+NTILE(3) OVER(ORDER BY cgpa DESC) AS 'cgpa_tertiles'
+FROM temp.students
+ORDER BY id;
+
+
+---- Question ----
+-- divide smartphones into 3 quartiles based on their price .
+SELECT brand_name , model , price ,
+CASE 
+    WHEN bucket = 1 THEN 'Budget'
+    WHEN bucket = 2 THEN 'Mid-Range'
+    WHEN bucket = 3 THEN 'Premium'
+END AS 'Price_Category'
+FROM (SELECT brand_name , model , price ,
+NTILE(3) OVER(ORDER BY price) AS 'bucket'   -- can also add partition by brand_name for finding the price_category within each brand .
+FROM temp.smartphones) t
+
+
+
+
+------------------------------------  Cummulative Distribution Function (CDF) Using CUME_DIST()
+-- The cumulative distribution function is used to describe the probability distribution of random variables. It can be used to describe the probability for a discrete, continuous or mixed variable. It is obtained by summing up the probability density function and getting the cumulative probability for a random variable.
+-- Cumulative Distribution Function (CDF) using CUME_DIST() is a technique in SQL for calculating the cumulative distribution of a dataset based on some criteria or conditions, and then performing calculations or analysis on the cumulative distribution using window functions..
+-- example: if a row has a CUME_DIST() value of 0.75, it means that 75% of the rows in the partition have a value less than or equal to that row's value. so it answers the question "what percentage of rows have a value less than or equal to this row's value?"
+-- The syntax for using CUME_DIST() function is as follows:
+-- CUME_DIST() OVER (PARTITION BY column_name ORDER BY column_name ASC|DESC)
+
+
+
+
+---- Question ----
+-- Find the students who are in the top 1% based on their cgpa or scored more than 99% of the students.
+SELECT *
+FROM (
+    SELECT *,
+           CUME_DIST() OVER (ORDER BY cgpa) AS cgpa_cume_dist
+    FROM temp.students
+) t
+WHERE cgpa_cume_dist > 0.99;
+
+
+
+
+------------------------------------  Partition By Multiple Columns
+-- The PARTITION BY clause in SQL is used to divide a result set into partitions or groups based on one or more columns. When multiple columns are specified in the PARTITION BY clause, the result set is divided into partitions based on the unique combinations of values in those columns.
+-- For example, if we have a table of sales data with columns for region, product, and sales amount, we can use the PARTITION BY clause to calculate the total sales for each region and product combination.
+-- The syntax for using PARTITION BY with multiple columns is as follows:
+-- SELECT column1, column2, SUM(sales_amount) AS total_sales
+-- FROM sales_data
+-- GROUP BY region, product;
+-- or using window functions:
+-- SELECT column1, column2, sales_amount,
+-- SUM(sales_amount) OVER (PARTITION BY region, product) AS total_sales
+-- FROM sales_data;
+
+
+
+
+---- Question ----
+-- Find the cheapest flight for each route (DepartingCity , ArrivingCity) .
+SELECT * FROM (SELECT DepartingCity , ArrivingCity , FlightName , AVG(Price_num) AS 'Average_Price' ,
+DENSE_RANK() OVER(PARTITION BY DepartingCity , ArrivingCity ORDER BY AVG(Price_num)) AS 'Price_Rank'
+FROM temp.flights
+GROUP BY DepartingCity , ArrivingCity  , FlightName ) t
+WHERE t.Price_Rank = 1
