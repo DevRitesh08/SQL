@@ -491,7 +491,6 @@ SELECT * FROM
 
 
 
-
 ------------------------------------  Running Average
 
 -- Running average (also known as *moving average*) is a statistical technique that calculates the average value of a dataset over a moving window of consecutive data points.
@@ -527,6 +526,7 @@ SELECT * FROM
 
 
 
+
 ---- Question ----
 -- Find the percentage of total sales for each food item in a restaurant with r_id = 1 .
 SELECT f_name , (Total_Sales / SUM(Total_Sales) OVER () )*100 AS 'percent_of_total' FROM 
@@ -547,3 +547,52 @@ ORDER BY percent_of_total DESC;
 -- It is calculated by subtracting the old value from the new value, dividing the result by the old value, and multiplying by 100 to express the result as a percentage.
 -- For example, in a sales dataset, the percentage change in sales from one month to the
 -- It is commonly used to analyze changes in financial data, such as stock prices, sales figures, or economic indicators, over a specific period of time.
+
+
+
+
+---- Question ----
+-- Find the MoM percentage change in sales for a restaurant with r_id = 1 .
+SELECT MONTHNAME(t1.date) AS month_name,
+       SUM(t1.amount) AS total_sales,
+       ((SUM(t1.amount) - LAG(SUM(t1.amount)) OVER(ORDER BY MONTH(t1.date))) / NULLIF(LAG(SUM(t1.amount)) OVER(ORDER BY MONTH(t1.date)), 0)) * 100) AS MoM_percentage_change    -- ADDED NULLIF TO AVOID DIVISION BY ZERO ERROR
+FROM zomato.orders t1
+JOIN zomato.order_details t2
+ON t1.order_id = t2.order_id
+WHERE t1.r_id = 1
+GROUP BY MONTHNAME(t1.date), MONTH(t1.date)
+ORDER BY MONTH(t1.date);
+
+
+
+
+------------------------------------  Percentiles & Quantiles (PERCENTILE_DISC & PERCENTILE_CONT)       ==> syntax issue :( :(
+-- A **Quantile** is a measure of the distribution of a dataset that divides the data into any number of equally sized intervals. For example, a dataset could be divided into **deciles** (ten equal parts), **quartiles** (four equal parts), **percentiles** (100 equal parts), or any other number of intervals.
+-- Each quantile represents a value below which a certain percentage of the data falls. For example, the 25th percentile (also known as the frst quartile, or Q1) represents the value below which 25% of the data falls. The 50th percentile (also known as the median) represents the value below which 50% of the data falls, and so on.
+-- In SQL, percentiles and quantiles can be calculated using window functions such as PERCENTILE_DISC and PERCENTILE_CONT.
+-- PERCENTILE_DISC (discrete) returns the smallest value in the dataset that is greater than or equal to the specified percentile.
+-- PERCENTILE_CONT (continuous) returns a value that may not exist in the dataset by interpolating between values.
+
+
+
+
+---- Question ----
+-- Find the median marks of all the students .
+-- median cgpa is the 50th percentile
+SELECT * , PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY marks) OVER() AS median_marks
+FROM temp.students;
+
+
+---- Question ----
+-- Find the 25th , 50th and 75th percentile marks of all the students .
+SELECT * , PERCENTILE_DISC(0.25) WITHIN GROUP (ORDER BY marks) OVER() AS 25th_percentile_marks,
+        PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY marks) OVER() AS 50th_percentile_marks,
+        PERCENTILE_DISC(0.75) WITHIN GROUP (ORDER BY marks) OVER() AS 75th_percentile_marks
+FROM temp.students;
+
+
+---- Question ----
+-- Find the branch wise median marks of all the students .
+SELECT * , PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY marks) OVER(PARTITION BY branch) AS median_marks_branch
+FROM temp.students;
+

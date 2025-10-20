@@ -109,3 +109,11 @@ Percent of total refers to the percentage or proportion of a specific value in r
 | Category A  | 500         | 50%              |
 | Category B  | 300         | 30%              |
 | Category C  | 200         | 20%              |
+
+---
+
+## Percentiles & Quantiles
+
+A **Quantile** is a measure of the distribution of a dataset that divides the data into any number of equally sized intervals. For example, a dataset could be divided into **deciles** (ten equal parts), **quartiles** (four equal parts), **percentiles** (100 equal parts), or any other number of intervals.
+
+Each quantile represents a value below which a certain percentage of the data falls. For example, the 25th percentile (also known as the first quartile, or Q1) represents the value below which 25% of the data falls. The 50th percentile (also known as the median) represents the value below which 50% of the data falls, and so on.
