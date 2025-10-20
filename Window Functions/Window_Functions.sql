@@ -349,10 +349,12 @@ WHERE t.cgpa > t.avg_cgpa_branch AND t.rank_cgpa_branch = 1 + (SELECT COUNT(*)
 
 
 
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 ------------------------------------  LEAD() and LAG()
+
 
 
 
@@ -371,6 +373,7 @@ WHERE t.cgpa > t.avg_cgpa_branch AND t.rank_cgpa_branch = 1 + (SELECT COUNT(*)
 ---- Question ----
 -- Find the previous cgpa of each student
 SELECT * , LAG(cgpa) OVER(ORDER BY id) from temp.students;
+
 
 
 
@@ -414,8 +417,10 @@ ORDER BY MONTH(date)
 
 
 
-
 ------------------------------------  RANKING 
+
+
+
 
 SELECT * FROM temp.ipl_complete ;
 
@@ -432,10 +437,11 @@ ORDER BY BattingTeam , rank_in_team;
 
 
 
-
 ------------------------------------  Cumulative Sum 
 -- Cumulative sum is the running total of a sequence of numbers , updated each time a new number is added to the sequence.
 -- It is calculated by adding each number in the sequence to the sum of all previous numbers.
+
+
 
 
 ---- Question ----
@@ -462,10 +468,10 @@ LIMIT 1;
 
 
 
-
 ------------------------------------  Cumulative Average
 -- Cumulative average is the running average of a sequence of numbers , updated each time a new number is added to the sequence.
 -- It is calculated by adding each number in the sequence to the sum of all previous numbers and dividing by the count of numbers in the sequence up to that point.
+
 
 
 
@@ -494,6 +500,8 @@ SELECT * FROM
 -- Running averages are often used in finance, economics, and engineering to smooth out noisy or volatile data series, and to identify trends or patterns that may be obscured by random fluctuations in the data.
 
 
+
+
 ---- Question ----
 -- Find running average of runs scored by 'V Kohli' after each match with a window of 10 matches.
  SELECT * FROM 
@@ -505,6 +513,37 @@ SELECT * FROM
                 FROM temp.ipl_complete
                 WHERE batter = 'V Kohli' 
                 GROUP BY ID 
-                WINDOW w as (ORDER BY ID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)      -- useful when  
+                WINDOW w as (ORDER BY ID ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)      -- useful in understanding player performance over time
                 ) t
-                -- plotted this in window_function.ipymnb notebook for better understanding
+                -- plotted this in window_function.ipynb notebook for better understanding
+
+
+
+
+------------------------------------  Percentage of Total
+-- Percentage of total is a statistical measure that expresses the proportion of a specific value or category in relation to the overall total of a dataset.
+-- It is calculated by dividing the specific value or category by the total value of the dataset and multiplying by 100 to express the result as a percentage.
+-- For example, in a sales dataset, the percentage of total sales for a particular product can be calculated by dividing the sales of that product by the total sales of all products and multiplying by 100.
+
+
+
+---- Question ----
+-- Find the percentage of total sales for each food item in a restaurant with r_id = 1 .
+SELECT f_name , (Total_Sales / SUM(Total_Sales) OVER () )*100 AS 'percent_of_total' FROM 
+(SELECT f_id , SUM(amount) AS 'Total_Sales' FROM zomato.orders t1
+JOIN zomato.order_details t2 
+ON t1.order_id = t2.order_id
+WHERE r_id = 1          -- just change r_id to find for different restaurant
+GROUP BY f_id ) t
+JOIN zomato.food f
+ON t.f_id = f.f_id
+ORDER BY percent_of_total DESC;
+
+
+
+
+------------------------------------  Percentage Change 
+-- Percentage change is a statistical measure that expresses the relative change between two values as a percentage.
+-- It is calculated by subtracting the old value from the new value, dividing the result by the old value, and multiplying by 100 to express the result as a percentage.
+-- For example, in a sales dataset, the percentage change in sales from one month to the
+-- It is commonly used to analyze changes in financial data, such as stock prices, sales figures, or economic indicators, over a specific period of time.

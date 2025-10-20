@@ -97,3 +97,15 @@ The window size determines the number of data points used to calculate the avera
 For example, a running average of a batsman's runs scored over a window of 10 matches will calculate the average runs scored in the last 10 matches, then move the window one match forward and recalculate the average for the new set of 10 matches, and so on.
 
 Running averages are often used in finance, economics, and engineering to smooth out noisy or volatile data series, and to identify trends or patterns that may be obscured by random fluctuations in the data.
+
+---
+
+## Percent of total
+
+Percent of total refers to the percentage or proportion of a specific value in relation to the total value. It is a commonly used metric to represent the relative importance or contribution of a particular value within a larger group or population.
+
+| category    | total_sales | percent_of_total |
+|-------------|-------------|------------------|
+| Category A  | 500         | 50%              |
+| Category B  | 300         | 30%              |
+| Category C  | 200         | 20%              |
