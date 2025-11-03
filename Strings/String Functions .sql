@@ -51,8 +51,9 @@ SELECT LTRIM('   hello world   ') as LeftTrimmedString , RTRIM('   hello world  
 
 
 -- 12. INSERT() function: Inserts a substring into a string at a specified position , syntax: INSERT(original_string, position, length_to_replace, substring_to_insert)
-SELECT INSERT('hello world', 7, 5, 'SQL') as ModifiedString ;  -- replaces 5 characters from position 7 with 'SQL'
-SELECT INSERT('hello world', 6, 0, ' beautiful ') as ModifiedString2 ;  -- inserts ' beautiful ' at position 6 without replacing any characters
+-- Getting error in some SQL versions like SQLite for below examples
+-- SELECT INSERT('hello world', 7, 5, 'SQL') as ModifiedString ;  -- replaces 5 characters from position 7 with 'SQL'
+-- SELECT INSERT('hello world', 6, 0, ' beautiful ') as ModifiedString2 ;  -- inserts ' beautiful ' at position 6 without replacing any characters
 
 
 -- 13. LEFT() and RIGHT() functions: Extracts a specified number of characters from the left or right side of a string . syntax: LEFT(string, number_of_characters) , RIGHT(string, number_of_characters)
