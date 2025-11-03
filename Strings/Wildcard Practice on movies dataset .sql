@@ -12,3 +12,7 @@ SELECT name FROM movies.movies WHERE name LIKE '____';
 SELECT name FROM movies.movies WHERE name LIKE 'The%s';
 -- 3. Find all movies that has 'Man' in their name
 SELECT * FROM movies.movies WHERE name LIKE '%Man%';
+-- 4. Find all movies that has 'a' as second letter in their name
+SELECT * FROM movies.movies WHERE name LIKE '_a%';
+-- 5. Find all movies that ends with 'ion'
+SELECT * FROM movies.movies WHERE name LIKE '%ion';
