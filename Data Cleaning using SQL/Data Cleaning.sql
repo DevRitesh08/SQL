@@ -167,3 +167,97 @@ MODIFY COLUMN Price INT;
 -- SET Price = (SELECT ROUND(Price) FROM electronics.laptopdata l2 WHERE l2.`index` = l1.`index`);
 
 
+-- we'll create a new column from the existing column 'OpSys' to standardize the operating system names like windows , macOS , Linux , No OS and Others(android , Chrome OS etc.)
+SELECT Opsys from electronics.laptopdata GROUP BY Opsys;  -- checking existing values
+ALTER TABLE electronics.laptopdata
+ADD COLUMN OpSys_Standardized VARCHAR(50);
+
+UPDATE electronics.laptopdata
+SET OpSys_Standardized = CASE       -- can also do implace update without creating new column like SET OpSys = CASE ...
+    WHEN OpSys LIKE '%Windows%' THEN 'Windows'
+    WHEN OpSys LIKE '%mac%' OR OpSys LIKE '%Mac%' THEN 'macOS'
+    WHEN OpSys LIKE '%Linux%' THEN 'Linux'
+    WHEN OpSys IS NULL OR OpSys = '' OR OpSys = 'No OS' THEN 'N/A'
+    ELSE 'Others'
+END;
+
+-- Drop the old OpSys column if not needed
+ALTER TABLE electronics.laptopdata
+DROP COLUMN OpSys;
+
+-- verifying the changes
+SELECT * FROM electronics.laptopdata ;
+
+
+-- Now lets  break Gpu column into GPU Brand and GPU Model for better analysis
+SELECT Gpu FROM electronics.laptopdata GROUP BY Gpu;  -- checking existing values
+
+-- Adding new columns
+ALTER TABLE electronics.laptopdata
+ADD COLUMN Gpu_Brand VARCHAR(100) AFTER Gpu,
+ADD COLUMN Gpu_Model VARCHAR(100) AFTER Gpu_Brand;
+
+-- Updating new columns by splitting Gpu column
+UPDATE electronics.laptopdata
+SET Gpu_Brand = SUBSTRING_INDEX(Gpu, ' ', 1),   -- gets the first word
+    Gpu_Model = REPLACE(Gpu, SUBSTRING_INDEX(Gpu, ' ', 1) , '');  -- removes the first word to get the model ==> or just use REPLACE(Gpu, Gpu_Brand, '') ,but this way is better to avoid issues with similar names like 'Intel Intel UHD Graphics';
+
+-- alternatively using correlated subquery
+-- UPDATE electronics.laptopdata AS l1
+-- SET Gpu_Brand = (SELECT SUBSTRING_INDEX(Gpu, ' ', 1) FROM electronics.laptopdata l2 WHERE l2.`index` = l1.`index`),
+--     Gpu_Model = (SELECT REPLACE(Gpu, SUBSTRING_INDEX(Gpu, ' ', 1) , '') FROM electronics.laptopdata l2 WHERE l2.`index` = l1.`index`);
+
+-- Dropping the old Gpu column if not needed
+ALTER TABLE electronics.laptopdata
+DROP COLUMN Gpu;
+
+-- verifying the changes
+SELECT * FROM electronics.laptopdata ;
+
+
+-- now creating three new columns from cpu column : CPU_Brand , CPU_Name , CPU_Speed
+SELECT CPU FROM electronics.laptopdata GROUP BY CPU;  -- checking existing values
+ALTER TABLE electronics.laptopdata
+ADD COLUMN CPU_Brand VARCHAR(100) AFTER CPU,
+ADD COLUMN CPU_Name VARCHAR(100) AFTER CPU_Brand,
+ADD COLUMN `CPU_Speed(in GHz)` DECIMAL(5,2) AFTER CPU_Name;
+
+-- Updating new columns by splitting Cpu column using correlated subquery
+UPDATE electronics.laptopdata AS l1
+SET CPU_Brand = (SELECT SUBSTRING_INDEX(CPU,' ',1) 
+				 FROM electronics.laptopdata l2 WHERE l2.index = l1.index);
+
+UPDATE electronics.laptopdata AS l1
+SET `CPU_Speed(in GHz)` = (SELECT CAST(REPLACE(SUBSTRING_INDEX(CPU,' ',-1),'GHz','')
+				AS DECIMAL(10,2)) FROM electronics.laptopdata l2 
+                WHERE l2.index = l1.index);
+
+UPDATE electronics.laptopdata AS l1
+SET CPU_Name = (SELECT
+					REPLACE(REPLACE(CPU,CPU_Brand,''),SUBSTRING_INDEX(REPLACE(CPU,CPU_Brand,''),' ',-1),'')
+					FROM electronics.laptopdata l2 
+					WHERE l2.index = l1.index);
+
+-- using single update with correlated subquery
+-- UPDATE electronics.laptopdata AS l1
+-- SET CPU_Brand = (SELECT SUBSTRING_INDEX(CPU,' ',1) 
+-- 				 FROM electronics.laptopdata l2 WHERE l2.index = l1.index),
+--     `CPU_Speed(in GHz)` = (SELECT CAST(REPLACE(SUBSTRING_INDEX(CPU,' ',-1),'GHz','')
+-- 				AS DECIMAL(10,2)) FROM electronics.laptopdata l2
+--                 WHERE l2.index = l1.index),
+--     CPU_Name = (SELECT REPLACE(REPLACE(CPU,CPU_Brand,''),SUBSTRING_INDEX(REPLACE(CPU,CPU_Brand,''),' ',-1),'')
+-- 					FROM electronics.laptopdata l2 WHERE l2.index = l1.index);
+
+
+-- using substring and string functions without correlated subquery
+UPDATE electronics.laptopdata
+SET CPU_Brand = SUBSTRING_INDEX(CPU,' ',1),
+    `CPU_Speed(in GHz)` = CAST(REPLACE(SUBSTRING_INDEX(CPU,' ',-1),'GHz','') AS DECIMAL(10,2)),
+    CPU_Name = REPLACE(REPLACE(CPU,CPU_Brand,''),SUBSTRING_INDEX(REPLACE(CPU,CPU_Brand,''),' ',-1),'');
+
+-- Dropping the old Cpu column if not needed
+ALTER TABLE electronics.laptopdata
+DROP COLUMN CPU;
+
+-- reviewing the changes
+SELECT * FROM electronics.laptopdata ;
