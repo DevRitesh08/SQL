@@ -261,3 +261,38 @@ DROP COLUMN CPU;
 
 -- reviewing the changes
 SELECT * FROM electronics.laptopdata ;
+
+
+-- Now lets  break the screenresolution column into 
+
+SELECT ScreenResolution FROM electronics.laptopdata;
+
+-- now lets extract screen resolution width and height
+SELECT ScreenResolution ,
+        SUBSTRING_INDEX(SUBSTRING_INDEX(ScreenResolution , " ", -1) , 'x' , 1),
+        SUBSTRING_INDEX(SUBSTRING_INDEX(ScreenResolution , " " , -1) , 'x' , -1)
+FROM electronics.laptopdata ;
+
+
+Alter TABLE electronics.laptopdata
+ADD COLUMN `Resolution_Width` INTEGER after ScreenResolution ,
+ADD COLUMN `Resolution_Height` INTEGER after Resolution_Width ,
+ADD COLUMN `Touchscreen_or_Not` BOOLEAN after Resolution_Height ;
+
+-- reviewing the changes 
+SELECT * FROM electronics.laptopdata ;
+
+UPDATE electronics.laptopdata
+SET `Resolution_Width` = SUBSTRING_INDEX(SUBSTRING_INDEX(ScreenResolution , " ", -1) , 'x' , 1),
+    `Resolution_Height` = SUBSTRING_INDEX(SUBSTRING_INDEX(ScreenResolution , " ", -1) , 'x' , -1),
+    `Touchscreen_or_Not` = ScreenResolution LIKE '%Touch%' ;
+
+-- Dropping the ScreenResolution column if not needed
+ALTER TABLE electronics.laptopdata
+DROP COLUMN ScreenResolution;
+
+-- further cleaning of cpu_name column 
+SELECT CPU_Name FROM electronics.laptopdata ; -- for now it has many sub- categories in i3,i5 and so on
+
+SELECT CPU_Name , SUBSTRING_INDEX(TRIM(CPU_Name) , " " , 2)
+FROM electronics.laptopdata;
