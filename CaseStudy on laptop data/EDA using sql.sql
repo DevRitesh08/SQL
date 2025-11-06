@@ -41,7 +41,7 @@ Max(Price) ,
 STD(Price) , 
 AVG(Price) , 
 -- PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY Price) AS Q1,   -- PERCENTILE_CONT not supported in SQL
--- PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY Price) AS Q2,
+-- PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY Price) AS Q2,    -- But works fine in other SQL variants like PostgreSQL, Oracle , SQL Server etc.
 -- PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY Price) AS Q3
 from electronics.laptopdata ;
 
@@ -82,3 +82,34 @@ WHERE Price IS NULL ;
 
 -- Finding Outliers
 
+// ...existing code...
+
+-- Finding Outliers
+
+WITH ordered AS (
+  SELECT 
+    price,
+    NTILE(4) OVER (ORDER BY price) AS quartile
+  FROM electronics.laptopdata
+),
+quartiles AS (
+  SELECT 
+    MAX(CASE WHEN quartile = 1 THEN price END) AS Q1,
+    MAX(CASE WHEN quartile = 3 THEN price END) AS Q3
+  FROM ordered
+)
+SELECT 
+  t.*,
+  q.Q1,
+  q.Q3,
+  (q.Q3 - q.Q1) AS IQR
+FROM electronics.laptopdata t
+CROSS JOIN quartiles q
+WHERE t.price < (q.Q1 - 1.5 * (q.Q3 - q.Q1)) 
+   OR t.price > (q.Q3 + 1.5 * (q.Q3 - q.Q1));
+
+-- Explanation:
+
+-- 1. First CTE (ordered): Assigns quartile numbers to each price
+-- 2. Second CTE (quartiles): Calculates Q1 and Q3 from the quartile assignments
+-- 3. Main Query: Uses CROSS JOIN to attach Q1 and Q3 values to every row in the laptopdata table, then filters for outliers
