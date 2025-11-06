@@ -296,3 +296,107 @@ SELECT CPU_Name FROM electronics.laptopdata ; -- for now it has many sub- catego
 
 SELECT CPU_Name , SUBSTRING_INDEX(TRIM(CPU_Name) , " " , 2)
 FROM electronics.laptopdata;
+
+UPDATE electronics.laptopdata
+SET CPU_Name = SUBSTRING_INDEX(TRIM(CPU_Name) , " " , 2);
+
+-- reviewing the changes
+SELECT * FROM electronics.laptopdata ;
+
+-- Now lets  break the memory column into Memory_type , Primary_Memory and Secondary_Memory
+SELECT Memory FROM electronics.laptopdata;
+
+SELECT Memory ,
+        SUBSTRING_INDEX(TRIM(Memory) , ' ' , -1) AS Memory_Type ,       -- still has some issue like Flash Storage is Storage only .
+        SUBSTRING_INDEX(TRIM(Memory) , ' ' , 1) AS Primary_Memory ,     
+        SUBSTRING_INDEX(TRIM(Memory) , '+' , -1) AS Secondary_Memory    -- here also we have a issue like when their is no secondary memory then primary memory gets copies automatically .
+FROM electronics.laptopdata ;
+
+ALTER Table electronics.laptopdata
+ADD COLUMN Memory_Type VARCHAR(50) AFTER Memory ,
+ADD COLUMN Primary_Memory INTEGER AFTER Memory_Type ,
+ADD COLUMN Secondary_Memory INTEGER AFTER Primary_Memory ;
+
+-- reviewing the changes
+SELECT DISTINCT `Memory` FROM electronics.laptopdata ;
+SELECT Memory ,
+CASE 
+    WHEN Memory LIKE '%SSD%' AND Memory LIKE '%HDD%' THEN  'Hybrid'
+    WHEN Memory LIKE '%SSD%' AND Memory LIKE '%Flash Storage%' THEN  'Hybrid'
+    WHEN Memory LIKE '%Flash Storage%' AND Memory LIKE '%HDD%' THEN  'Hybrid'
+    WHEN Memory LIKE '%SSD%' THEN 'SSD'
+    WHEN Memory LIKE '%HDD%' THEN 'HDD'
+    WHEN Memory LIKE '%Flash Storage%' THEN 'Flash Storage'
+    WHEN Memory LIKE '%Flash Storage%' THEN 'Flash Storage'
+    ELSE  NULL
+END
+AS Memory_Type
+FROM electronics.laptopdata;
+
+UPDATE electronics.laptopdata
+SET Memory_Type = CASE 
+                WHEN Memory LIKE '%SSD%' AND Memory LIKE '%HDD%' THEN  'Hybrid'
+                WHEN Memory LIKE '%SSD%' AND Memory LIKE '%Flash Storage%' THEN  'Hybrid'
+                WHEN Memory LIKE '%Flash Storage%' AND Memory LIKE '%HDD%' THEN  'Hybrid'
+                WHEN Memory LIKE '%SSD%' THEN 'SSD'
+                WHEN Memory LIKE '%HDD%' THEN 'HDD'
+                WHEN Memory LIKE '%Flash Storage%' THEN 'Flash Storage'
+                WHEN Memory LIKE '%Flash Storage%' THEN 'Flash Storage'
+                ELSE  NULL
+END ;
+
+SELECT * FROM electronics.laptopdata;
+
+SELECT Memory ,
+SUBSTRING_INDEX(Memory , "+" , 1) ,
+CASE WHEN `Memory` like '%+%' then TRIM(SUBSTRING_INDEX(Memory , "+" , -1 ))  ELSE 0  end
+FROM electronics.laptopdata ;
+-- here also we don't need GB, SSD , HDD , Flash Stroage terms since we already have a Memory type column .
+-- so we'll use Regx to solve this
+SELECT Memory ,
+REGEXP_SUBSTR(SUBSTRING_INDEX(Memory , "+" , 1),'[0-9]+') ,
+CASE WHEN `Memory` like '%+%' then TRIM(REGEXP_SUBSTR(SUBSTRING_INDEX(Memory , "+" , -1 ),'[0-9]+'))  ELSE 0  end
+FROM electronics.laptopdata ;
+
+-- NOW finally updating our columns 
+UPDATE electronics.laptopdata
+SET Primary_Memory = REGEXP_SUBSTR(SUBSTRING_INDEX(Memory , "+" , 1),'[0-9]+') ,
+    Secondary_Memory = CASE WHEN `Memory` like '%+%' then TRIM(REGEXP_SUBSTR(SUBSTRING_INDEX(Memory , "+" , -1 ),'[0-9]+'))  ELSE 0  end ;
+
+-- now we have one more issue that is 1 tb , 2 tb is written as 1 so we have to * it with 1024 .
+
+SELECT  Primary_Memory , Secondary_Memory ,
+CASE 
+    WHEN Primary_Memory <= 2 THEN  Primary_Memory*1024
+    ELSE  Primary_Memory
+END ,
+CASE 
+    WHEN Secondary_Memory <= 2 THEN  Secondary_Memory*1024
+    ELSE  Secondary_Memory
+END
+FROM electronics.laptopdata ;
+
+-- now updating the columns 
+UPDATE electronics.laptopdata 
+SET Primary_Memory = CASE 
+                        WHEN Primary_Memory <= 2 THEN  Primary_Memory*1024
+                        ELSE  Primary_Memory
+                    END ,
+    Secondary_Memory = CASE 
+                            WHEN Secondary_Memory <= 2 THEN  Secondary_Memory*1024
+                            ELSE  Secondary_Memory
+                        END ;
+
+-- reviewing the changes
+SELECT * FROM electronics.laptopdata ;
+
+-- Dropping the Memory column if not needed
+ALTER TABLE electronics.laptopdata
+DROP COLUMN Memory;
+-- also Gpu_Model have too many things and not that important so lets drop it also
+ALTER TABLE electronics.laptopdata
+DROP COLUMN Gpu_Model;
+
+-- reviewing the changes
+SELECT * FROM electronics.laptopdata ;
+
