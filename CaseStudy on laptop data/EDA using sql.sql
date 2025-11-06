@@ -82,10 +82,6 @@ WHERE Price IS NULL ;
 
 -- Finding Outliers
 
-// ...existing code...
-
--- Finding Outliers
-
 WITH ordered AS (
   SELECT 
     price,
@@ -113,3 +109,4 @@ WHERE t.price < (q.Q1 - 1.5 * (q.Q3 - q.Q1))
 -- 1. First CTE (ordered): Assigns quartile numbers to each price
 -- 2. Second CTE (quartiles): Calculates Q1 and Q3 from the quartile assignments
 -- 3. Main Query: Uses CROSS JOIN to attach Q1 and Q3 values to every row in the laptopdata table, then filters for outliers
+
