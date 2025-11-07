@@ -154,3 +154,31 @@ SELECT DATE_SUB(NOW() , INTERVAL 8 WEEK);
 SELECT DATE_SUB(NOW() , INTERVAL 5 QUARTER);
 
 -- H>Work : do examples for ADDTIME() and SUBTIME() functions
+
+
+
+----
+-- TIMESTAMP AND DATETIME ==> IMPORTANT 
+----
+
+
+
+
+CREATE TABLE temp.Posts (
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    post_content VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO temp.Posts (user_id, post_content)
+VALUES
+    (1, 'Hello World!'),
+    (2, 'My first post.');
+
+SELECT * FROM temp.Posts;
+
+UPDATE temp.Posts
+SET post_content = 'Updated content'
+WHERE post_id = 1;
