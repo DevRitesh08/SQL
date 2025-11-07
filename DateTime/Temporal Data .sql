@@ -78,3 +78,40 @@ SELECT ride_id, HOUR(start_time) AS ride_hour, MINUTE(start_time) AS Start_time_
        TIMESTAMPDIFF(MINUTE, start_time, end_time) AS ride_duration_minutes
 FROM temp.UBER;
 
+
+
+----
+-- Date Formatting 
+----
+
+
+
+-- 1. DATE_FORMAT(): Formats a date according to the specified format string
+-- Example: date like this 11 march , 23
+SELECT start_time , DATE_FORMAT(start_time, '%d %M, %y') AS formatted_date 
+FROM temp.UBER;
+
+
+
+-- 2. TIME_FORMAT(): Formats a time according to the specified format string
+-- Example: time like this 08:30 AM
+SELECT start_time , TIME_FORMAT(start_time, '%h:%i %p') AS formatted_time       -- DATE_FORMAT can also be used for time formatting because time is part of date-time
+FROM temp.UBER;
+
+
+
+----
+-- Type Conversion Functions
+----
+
+
+
+
+-- Implicit type conversion : it happens automatically when you use a value in a context that requires a different data type.
+-- Examples :
+
+SELECT '2025-11-07' > '2025-11-05'; -- Now both are strings but compared as dates because of implicit conversion of string to date by SQL engine
+
+SELECT '2025-11-07' > '5 november 2025'; -- Here it is not doing implicit conversion because the second string is not in a recognizable date format so it treats both as strings and compares lexicographically
+
+
