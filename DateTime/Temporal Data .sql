@@ -135,5 +135,22 @@ SELECT MONTHNAME(STR_TO_DATE('12 Mar 2025 8h 30m', '%d %b %Y %kh %im')) AS conve
 -- 3. DATE_ADD() and DATE_SUB(): Adds or subtracts a specified time interval to/from a date
 -- 4. ADDTIME() and SUBTIME(): Adds or subtracts a specified time interval to/from a time or datetime value
 
-SELECT DATEDIFF(CURRENT_DATE(), '2024-09-03') ;
-SELECT DATEDIFF(CURRENT_DATE(), '2025-08-22') ;
+SELECT DATEDIFF(CURRENT_DATE(), '2024-09-03') ;     -- Github journey till now
+SELECT DATEDIFF(CURRENT_DATE(), '2025-08-22') ;     -- Dsmp journey till now
+SELECT * ,DATEDIFF(end_time,start_time)
+FROM temp.UBER ;
+
+SELECT TIMEDIFF('2023-10-01 10:45:00', '2023-10-01 10:00:00') AS ride_time_difference       -- here ride_time_difference are 0 because its showing the time difference in terms of days and since the travel time is very small .
+FROM temp.UBER ;
+
+SELECT DATE_ADD(NOW() , INTERVAL 80 DAY);
+SELECT DATE_ADD(NOW() , INTERVAL 8 YEAR);
+SELECT DATE_ADD(NOW() , INTERVAL 8 WEEK);
+SELECT DATE_ADD(NOW() , INTERVAL 5 QUARTER);
+
+SELECT DATE_SUB(NOW() , INTERVAL 80 DAY);
+SELECT DATE_SUB(NOW() , INTERVAL 8 YEAR);
+SELECT DATE_SUB(NOW() , INTERVAL 8 WEEK);
+SELECT DATE_SUB(NOW() , INTERVAL 5 QUARTER);
+
+-- H>Work : do examples for ADDTIME() and SUBTIME() functions
