@@ -204,4 +204,147 @@ SUM(CASE WHEN CPU_Brand = 'Samsung' THEN 1 ELSE 0 END) AS 'Samsung'
 FROM electronics.laptopdata
 GROUP BY `Company`;
 
-SELECT DISTINCT `CPU_Brand` FROM electronics.laptopdata
+SELECT DISTINCT `CPU_Brand` FROM electronics.laptopdata ;
+
+
+
+----
+-- for Numerical-Categorical Columns
+----
+
+
+
+-- Compare distribution across categories
+SELECT Company , Min(Price) , MAX(Price)  , AVG(Price) , STD(Price) 
+FROM electronics.laptopdata
+GROUP BY Company ;
+
+
+
+----
+-- Dealing with Missing Values
+----
+
+
+
+
+-- Dealing with missing values ==> we don't have them so lets insert some missing values for demonstration
+update electronics.laptopdata
+SET Price = NULL
+WHERE Price IN (50136 , 30743 , 18595 , 71875) ;
+
+SELECT * FROM electronics.laptopdata 
+WHERE Price IS NULL ;
+
+-- Now we can either drop or impute missing values
+-- to impute we have these common strategies :
+-- 1. Mean Imputation of Price
+
+-- UPDATE electronics.laptopdata
+-- SET Price = (SELECT AVG(Price) FROM electronics.laptopdata WHERE Price IS NOT NULL)
+-- WHERE Price IS NULL;
+-- this will not work because we can't specify target table in subquery of update statement in mysql
+SET @avg_price = (SELECT AVG(Price) FROM electronics.laptopdata WHERE Price IS NOT NULL);
+
+UPDATE electronics.laptopdata
+SET Price = @avg_price
+WHERE Price IS NULL;
+
+
+-- 2. Corresponding Company Price Imputation  ==> again we have to make null values again for demonstration using above update query
+
+  -- UPDATE electronics.laptopdata t1
+  -- SET Price = (SELECT AVG(Price) FROM electronics.laptopdata t2 WHERE t1.`Company` = t2.`Company` AND t2.Price IS NOT NULL)
+  -- WHERE Price IS NULL;
+-- this will not work because we can't specify target table in subquery of update statement in mysql
+
+SET @company_price = (SELECT AVG(Price) FROM electronics.laptopdata t2 WHERE t2.`Company` = (SELECT t1.`Company` FROM electronics.laptopdata t1 WHERE t1.Price IS NULL LIMIT 1) AND t2.Price IS NOT NULL);
+
+UPDATE electronics.laptopdata t1
+SET Price = @company_price
+WHERE Price IS NULL;
+
+-- 3. Corresponding CPU_Name and Company Price Imputation
+
+-- UPDATE electronics.laptopdata t1
+-- SET Price = (SELECT AVG(Price) FROM electronics.laptopdata t2 WHERE t1.`Company` = t2.`Company` AND t1.`CPU_Name` = t2.`CPU_Name` AND t2.Price IS NOT NULL)
+-- WHERE Price IS NULL;
+-- this will not work because we can't specify target table in subquery of update statement in mysql
+
+SET @cpu_company_price = (SELECT AVG(Price) FROM electronics.laptopdata t2 WHERE t2.`Company` = (SELECT t1.`Company` FROM electronics.laptopdata t1 WHERE t1.Price IS NULL LIMIT 1) AND t2.`CPU_Name` = (SELECT t1.`CPU_Name` FROM electronics.laptopdata t1 WHERE t1.Price IS NULL LIMIT 1) AND t2.Price IS NOT NULL);
+UPDATE electronics.laptopdata t1
+SET Price = @cpu_company_price
+WHERE Price IS NULL;
+
+SELECT * FROM electronics.laptopdata ;
+
+
+
+
+----
+-- Feature Engineering : Creating new features
+----
+
+-- Creating a new feature ppi (pixels per inch) , PPI = sqrt( X_resolution^2 + Y_resolution^2 ) / screen_size(in inches)
+ALTER TABLE electronics.laptopdata
+ADD COLUMN PPI FLOAT;
+
+UPDATE electronics.laptopdata
+SET PPI = SQRT(POW(Resolution_Width, 2) + POW(Resolution_Height, 2)) / Inches
+WHERE Inches IS NOT NULL;
+
+-- Review the updates
+SELECT * FROM electronics.laptopdata LIMIT 5;
+
+-- creating a screen size bracket feature
+ALTER TABLE electronics.laptopdata
+ADD COLUMN Screen_Size_Bracket VARCHAR(20);
+
+-- using CASE statement to categorize screen sizes
+UPDATE electronics.laptopdata
+SET Screen_Size_Bracket = CASE 
+    WHEN Inches < 13 THEN 'Small'
+    WHEN Inches BETWEEN 13 AND 15 THEN 'Medium'
+    WHEN Inches > 15 THEN 'Large'
+    ELSE 'Unknown'
+END;
+
+-- using ntile to create screen size brackets
+
+WITH size_brackets AS (
+    SELECT 
+        Inches,
+        NTILE(3) OVER (ORDER BY Inches) AS size_bracket
+    FROM electronics.laptopdata
+)
+UPDATE electronics.laptopdata t
+JOIN size_brackets sb ON t.Inches = sb.Inches
+SET t.Screen_Size_Bracket = 
+    CASE sb.size_bracket
+        WHEN 1 THEN 'Small'
+        WHEN 2 THEN 'Medium'
+        WHEN 3 THEN 'Large'
+    END;
+
+-- Review the updates
+SELECT * FROM electronics.laptopdata;
+
+
+
+
+
+----
+-- One Hot Encoding Encoding Categorical Variables 
+----
+
+-- One Hot Encoding : it creates new binary columns for each category in a categorical variable. 
+
+-- Example: One Hot Encoding for 'Gpu_Brand' column
+SELECT 
+    Gpu_Brand,
+    CASE WHEN Gpu_Brand = 'Nvidia' THEN 1 ELSE 0 END AS Gpu_Brand_Nvidia,
+    CASE WHEN Gpu_Brand = 'Intel' THEN 1 ELSE 0 END AS Gpu_Brand_Intel,
+    CASE WHEN Gpu_Brand = 'AMD' THEN 1 ELSE 0 END AS Gpu_Brand_AMD ,
+    CASE WHEN Gpu_Brand = 'ARM' THEN 1 ELSE 0 END AS Gpu_Brand_ARM
+FROM electronics.laptopdata ;
+
