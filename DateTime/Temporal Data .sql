@@ -107,11 +107,33 @@ FROM temp.UBER;
 
 
 
--- Implicit type conversion : it happens automatically when you use a value in a context that requires a different data type.
+-- 1. Implicit type conversion : it happens automatically when you use a value in a context that requires a different data type.
 -- Examples :
 
 SELECT '2025-11-07' > '2025-11-05'; -- Now both are strings but compared as dates because of implicit conversion of string to date by SQL engine
 
 SELECT '2025-11-07' > '5 november 2025'; -- Here it is not doing implicit conversion because the second string is not in a recognizable date format so it treats both as strings and compares lexicographically
 
+SELECT MONTHNAME('2025-11-07'); -- Implicit conversion of string to date by SQL engine
+SELECT DAYNAME('7 july 2025'); -- Implicit conversion of string fails here because the format is not recognized by SQL engine
 
+
+-- 2. Explicit type conversion : using functions to convert data types explicitly ==> STR_TO_DATE(), CAST(), CONVERT()
+SELECT STR_TO_DATE('7 july 2025', '%d %M %Y') AS converted_date; -- Explicit conversion of string to date using STR_TO_DATE function
+SELECT MONTHNAME(STR_TO_DATE('12 Mar 2025 8h 30m', '%d %b %Y %kh %im')) AS converted_date_time; -- Explicit conversion of string to date-time using STR_TO_DATE function
+
+
+
+----
+-- Date Time Arithmetic
+----
+
+
+
+-- 1. DATEDIFF(): Returns the difference between two date values , in days 
+-- 2. TIMEDIFF(): Returns the difference between two time or datetime values , in time format
+-- 3. DATE_ADD() and DATE_SUB(): Adds or subtracts a specified time interval to/from a date
+-- 4. ADDTIME() and SUBTIME(): Adds or subtracts a specified time interval to/from a time or datetime value
+
+SELECT DATEDIFF(CURRENT_DATE(), '2024-09-03') ;
+SELECT DATEDIFF(CURRENT_DATE(), '2025-08-22') ;
