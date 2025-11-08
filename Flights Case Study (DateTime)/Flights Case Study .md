@@ -5,7 +5,7 @@
 1. Find the month with most number of flights
 2. Which week day has most costly flights
 3. Find number of indigo flights every month
-4. Find list of all flights that depart between 10AM and 2PM from Delhi to Banglore
+4. Find list of all flights that depart between 10AM and 2PM from Banglore to Delhi
 5. Find the number of flights departing on weekends from Bangalore
 6. Calculate the arrival time for all flights by adding the duration to the departure time.
 

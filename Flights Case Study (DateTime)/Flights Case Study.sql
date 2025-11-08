@@ -15,10 +15,10 @@ ORDER BY COUNT(*) DESC LIMIT 1;
 
 
 -- 2. Which week day has most costly flights
-SELECT WEEKDAY(Date_of_Journey) AS Weekday, COUNT(*) AS Number_of_Flights
+SELECT DAYNAME(Date_of_Journey) AS Weekday, AVG(Price) AS Average_Cost
 FROM flights_data.flights
-GROUP BY WEEKDAY(Date_of_Journey)
-ORDER BY COUNT(*) DESC LIMIT 1;
+GROUP BY DAYNAME(Date_of_Journey)
+ORDER BY Average_Cost DESC LIMIT 1;
 
 
 -- 3. Find number of indigo flights every month
@@ -28,7 +28,49 @@ WHERE Airline = 'IndiGo'
 GROUP BY MONTHNAME(Date_of_Journey);
 
 
--- 4. Find list of all flights that depart between 10AM and 2PM from Delhi to Banglore
-SELECT * 
+-- 4. Find list of all flights that depart between 10AM and 2PM from Banglore to New Delhi
+SELECT *
 FROM flights_data.flights
-WHERE ( Dep_Time BETWEEN 10:00:00 AND 14:00:00 ) AND ( Source = 'New Delhi' AND Destination = 'Banglore' ) ;
+WHERE Dep_Time >= '10:00:00' AND Dep_Time <= '14:00:00' AND Source = 'Banglore' AND Destination = 'New Delhi'  ;
+-- or
+SELECT *
+FROM flights_data.flights
+WHERE Dep_Time BETWEEN '10:00:00' AND '14:00:00' AND Source = 'Banglore' AND Destination = 'New Delhi'  ;
+
+
+-- 5. Find the number of flights departing on weekends from Bangalore
+SELECT COUNT(*) AS Weekend_Flights
+FROM flights_data.flights
+WHERE Source = 'Banglore' AND DAYNAME(Date_of_Journey) IN ('Sunday', 'Saturday');
+-- or
+SELECT COUNT(*) AS Weekend_Flights
+FROM flights_data.flights
+WHERE Source = 'Banglore' AND DAYOFWEEK(Date_of_Journey) IN (1, 7);  -- 1 = Sunday, 7 = Saturday
+
+
+-- 6. Calculate the arrival time for all flights by adding the duration to the departure time.
+-- creating a column that has both date and time for departure
+ALTER TABLE flights_data.flights
+ADD COLUMN Dep_DateTime DATETIME;
+
+UPDATE flights_data.flights
+SET Dep_DateTime = STR_TO_DATE(CONCAT(Date_of_Journey, ' ', Dep_Time), '%Y-%m-%d %H:%i');
+-- review above two queries if already done
+SELECT * FROM flights_data.flights ;
+-- creating a column to store duration in minutes
+ALTER TABLE flights_data.flights
+ADD COLUMN Duration_in_Minutes INT after Duration;
+
+
+SELECT duration,
+REPLACE(SUBSTRING_INDEX(duration, ' ', 1), 'h', '')*60  + 
+CASE when   SUBSTRING_INDEX(duration, ' ', 1) = SUBSTRING_INDEX(duration, ' ', -1)     -- because some durations are like '2h 0m' then our simple reverse extraction will give 2 instead of 0 .
+     THEN 0
+     ELSE REPLACE(SUBSTRING_INDEX(duration, ' ', -1), 'm', '')
+END AS Minutes
+FROM flights_data.flights;
+
+
+
+UPDATE flights_data.flights
+SET Duration_in_Minutes = (HOUR(Arrival_Time) - HOUR(Dep_Time)) * 60 + (MINUTE(Arrival_Time) - MINUTE(Dep_Time));
