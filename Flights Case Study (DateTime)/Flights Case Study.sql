@@ -48,6 +48,11 @@ FROM flights_data.flights
 WHERE Source = 'Banglore' AND DAYOFWEEK(Date_of_Journey) IN (1, 7);  -- 1 = Sunday, 7 = Saturday
 
 
+-----------------------------------------------------------------------------------------------------------------------------------
+---------- Level Up - Advanced SQL Queries ----------
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
 -- 6. Calculate the arrival time for all flights by adding the duration to the departure time.
 -- creating a column that has both date and time for departure
 ALTER TABLE flights_data.flights
@@ -63,14 +68,62 @@ ADD COLUMN Duration_in_Minutes INT after Duration;
 
 
 SELECT duration,
-REPLACE(SUBSTRING_INDEX(duration, ' ', 1), 'h', '')*60  + 
+REPLACE(SUBSTRING_INDEX(duration, ' ', 1), 'h', '')*60  +       -- cant use aliasing before hand because SQL executes linearly
 CASE when   SUBSTRING_INDEX(duration, ' ', 1) = SUBSTRING_INDEX(duration, ' ', -1)     -- because some durations are like '2h 0m' then our simple reverse extraction will give 2 instead of 0 .
      THEN 0
      ELSE REPLACE(SUBSTRING_INDEX(duration, ' ', -1), 'm', '')
 END AS Minutes
 FROM flights_data.flights;
 
+UPDATE flights_data.flights
+SET Duration_in_Minutes = ( REPLACE(SUBSTRING_INDEX(duration, ' ', 1), 'h', '')*60  + 
+CASE when   SUBSTRING_INDEX(duration, ' ', 1) = SUBSTRING_INDEX(duration, ' ', -1)   
+     THEN 0
+     ELSE REPLACE(SUBSTRING_INDEX(duration, ' ', -1), 'm', '')
+END );
 
+--review above two queries if already done
+SELECT * FROM flights_data.flights ;
+-- finally calculating arrival time
+ALTER TABLE flights_data.flights
+ADD COLUMN Arrival_Time DATETIME after Dep_DateTime;
 
 UPDATE flights_data.flights
-SET Duration_in_Minutes = (HOUR(Arrival_Time) - HOUR(Dep_Time)) * 60 + (MINUTE(Arrival_Time) - MINUTE(Dep_Time));
+SET Arrival_Time = DATE_ADD(Dep_DateTime, INTERVAL Duration_in_Minutes MINUTE); 
+
+-- review above two queries if already done
+SELECT Airline, Dep_DateTime, Duration_in_Minutes, Arrival_Time
+FROM flights_data.flights;
+-- now lets finally extract the arrival time
+SELECT TIME(arrival_time) AS Arrival_Time
+FROM flights_data.flights;
+
+
+
+-- 7. Calculate the arrival date for all the flights
+SELECT DATE(arrival_time) AS Arrival_Date
+FROM flights_data.flights;
+
+
+-- 8. Find the number of flights which travel on multiple dates , i.e., the arrival date is different from the departure date.
+SELECT COUNT(*) AS Multi_Date_Flights
+FROM flights_data.flights
+WHERE DATE(Dep_DateTime) != DATE(Arrival_Time);
+
+
+-- 9. Calculate the average duration of flights between all city pairs.
+SELECT Source, Destination, AVG(Duration_in_Minutes) AS Average_Duration_Minutes
+FROM flights_data.flights
+GROUP BY Source, Destination;
+-- lets find out the avg duration in xh ym format
+SELECT Source, Destination, TIME_FORMAT(SEC_TO_TIME(AVG(Duration_in_Minutes)*60), '%kh %m') AS Average_Duration
+FROM flights_data.flights
+GROUP BY Source, Destination;
+-- or
+SELECT Source, Destination,
+       CONCAT(AVG(Duration_in_Minutes) DIV 60, 'h ', AVG(Duration_in_Minutes) MOD 60, 'm') AS Average_Duration
+FROM flights_data.flights
+GROUP BY Source, Destination;
+
+-- 10. Find all flights which departed before midnight but arrived at their destination after midnight having only 1 stop.
+
