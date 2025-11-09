@@ -120,10 +120,91 @@ SELECT Source, Destination, TIME_FORMAT(SEC_TO_TIME(AVG(Duration_in_Minutes)*60)
 FROM flights_data.flights
 GROUP BY Source, Destination;
 -- or
-SELECT Source, Destination,
+SELECT Source, Destination ,
        CONCAT(AVG(Duration_in_Minutes) DIV 60, 'h ', AVG(Duration_in_Minutes) MOD 60, 'm') AS Average_Duration
 FROM flights_data.flights
-GROUP BY Source, Destination;
+GROUP BY Source, Destination ;
 
--- 10. Find all flights which departed before midnight but arrived at their destination after midnight having only 1 stop.
+-- 10. Find all flights which departed before midnight but arrived at their destination after midnight having 0 stop.
+SELECT * FROM flights_data.flights
+WHERE Total_Stops = 'non-stop' AND DAY(Date_of_Journey) < DAY(Arrival_Time) ;
 
+
+-- 11. Find quarter wise number of flights for each airline
+SELECT  Airline, QUARTER(Dep_DateTime), COUNT(*) AS number_of_flights 
+FROM flights_data.flights
+GROUP BY `Airline` ,  QUARTER(Dep_DateTime) ;
+
+
+-- 12. Find the longest flight distance(between cities in terms of time) in India
+SELECT Airline , Source , Destination , MAX(Duration_in_Minutes) AS Longest_Duration_Minutes
+FROM flights_data.flights
+GROUP BY Source, Destination , Airline
+ORDER BY Longest_Duration_Minutes DESC LIMIT 1;
+
+
+-- 13. Average time duration for flights that have 1 stop vs more than 1 stops
+SELECT 
+    CASE 
+        WHEN Total_Stops = '1 stop' THEN '1 stop'
+        else 'more than 1 stop'  -- Handle NULL or unexpected values
+    END AS Stop_Category,
+    TIME_FORMAT(SEC_TO_TIME(AVG(Duration_in_Minutes)*60),'%kh %im') AS 'avg_duration'
+FROM flights_data.flights
+WHERE Total_Stops != 'non-stop' AND Total_Stops IS NOT NULL
+GROUP BY Stop_Category;
+-- or using cte
+WITH temp_table AS (SELECT *,
+CASE 
+	WHEN total_stops = '1 stop' THEN '1 stop'
+    ELSE 'more than 1 stop'
+END AS 'temp'
+FROM flights_data.flights
+WHERE Total_Stops != 'non-stop' AND Total_Stops IS NOT NULL)
+SELECT temp,
+TIME_FORMAT(SEC_TO_TIME(AVG(Duration_in_Minutes)*60),'%kh %im') AS 'avg_duration',
+AVG(price) AS 'avg_price'
+FROM temp_table
+GROUP BY temp;
+
+
+
+-- 14. Find all Air India flights in a given date range originating from Delhi ==> date range 2019-03-08 to 2019-03-18
+SELECT * 
+FROM flights_data.flights
+where Source = 'delhi'  AND Airline = 'Air India' and 
+DATE(Date_of_Journey) BETWEEN '2019-03-08' AND '2019-03-18' ;
+
+
+
+-- 15. Find the longest flight of each airline
+SELECT Airline , MAX(`Duration_in_Minutes`) AS max_duration
+FROM flights_data.flights 
+GROUP BY Airline
+ORDER BY max_duration DESC ;
+-- or
+SELECT Airline , TIME_FORMAT(SEC_TO_TIME(MAX(Duration_in_Minutes)*60),'%kh %im') AS 'max_duration'
+FROM flights_data.flights 
+GROUP BY Airline 
+ORDER BY MAX(Duration_in_Minutes)*60 DESC;
+
+
+-- 16. Find all the pair of cities having average time duration > 3 hours
+SELECT `Source` , `Destination` , TIME_FORMAT(SEC_TO_TIME(AVG(Duration_in_Minutes)*60),'%kh %im') AS 'average_duration'
+FROM flights_data.flights
+GROUP BY `Source` , `Destination`
+HAVING AVG(Duration_in_Minutes) > 180;
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+---------- Expert Level SQL Queries ----------
+----------------------------------------------------------------------------------------------------------------------------------
+
+-- 17. Make a weekday vs time grid showing frequency of flights from Banglore and Delhi ==> time slots : 00-06 , 06-12 , 12-18 , 18-24
+SELECT  
+FROM flights_data.flights
+WHERE Source IN ('Banglore', 'Delhi')
+
+
+SELECT * FROM flights_data.flights;

@@ -21,3 +21,5 @@
 14. Find all Air India flights in a given date range originating from Delhi
 15. Find the longest flight of each airline
 16. Find all the pair of cities having average time duration > 3 hours
+17. Make a weekday vs time grid showing frequency of flights from Banglore and Delhi
+18. Make a weekday vs time grid showing avg flight price from Banglore and Delhi
