@@ -201,10 +201,45 @@ HAVING AVG(Duration_in_Minutes) > 180;
 ---------- Expert Level SQL Queries ----------
 ----------------------------------------------------------------------------------------------------------------------------------
 
--- 17. Make a weekday vs time grid showing frequency of flights from Banglore and Delhi ==> time slots : 00-06 , 06-12 , 12-18 , 18-24
-SELECT  
+-- 17. Make a weekday vs time grid(ma) showing frequency of flights from Banglore and Delhi ==> time slots : 00-06 , 06-12 , 12-18 , 18-24
+SELECT  DAYNAME(Dep_DateTime) AS Weekday,
+        SUM(CASE WHEN HOUR(Dep_Time) >=0 AND HOUR(Dep_Time) <6 THEN 1 ELSE 0 END) AS '12AM-06AM',
+        SUM(CASE WHEN HOUR(Dep_Time) >=6 AND HOUR(Dep_Time) <12 THEN 1 ELSE 0 END) AS '06AM-12PM',
+        SUM(CASE  WHEN HOUR(Dep_Time) >=12 AND HOUR(Dep_Time) <18 THEN 1 ELSE 0 END) AS '12PM-06PM',     
+        SUM(CASE WHEN HOUR(Dep_Time) >=18 AND HOUR(Dep_Time) <24 THEN 1 ELSE 0 END) AS '06PM-12AM'
 FROM flights_data.flights
 WHERE Source IN ('Banglore', 'Delhi')
+GROUP BY WEEKDAY
+ORDER BY Weekday;   
+-- or
+SELECT  DAYNAME(Dep_DateTime) AS Weekday,
+        COUNT(CASE WHEN HOUR(Dep_Time) >=0 AND HOUR(Dep_Time) <6 THEN 1 END) AS '12AM-06AM',
+        COUNT(CASE WHEN HOUR(Dep_Time) >=6 AND HOUR(Dep_Time) <12 THEN 1 END) AS '06AM-12PM',
+        COUNT(CASE  WHEN HOUR(Dep_Time) >=12 AND HOUR(Dep_Time) <18 THEN 1 END) AS '12PM-06PM',     
+        COUNT(CASE WHEN HOUR(Dep_Time) >=18 AND HOUR(Dep_Time) <24 THEN 1 END) AS '06PM-12AM'
+FROM flights_data.flights
+WHERE Source IN ('Banglore', 'Delhi')
+GROUP BY WEEKDAY
+ORDER BY Weekday;
 
 
-SELECT * FROM flights_data.flights;
+-- 18. Make a weekday vs time grid showing avg flight price from Banglore and Delhi
+SELECT  DAYNAME(Dep_DateTime) AS Weekday,
+        AVG(CASE WHEN HOUR(Dep_Time) >=0 AND HOUR(Dep_Time) <6 THEN Price END) AS '12AM-06AM',      -- else 0 will effect the average so here we'll not use else ==> can skip else part or use else NULL ==> because AGGREGATE operations ignore NULLs
+        AVG(CASE WHEN HOUR(Dep_Time) >=6 AND HOUR(Dep_Time) <12 THEN Price END) AS '06AM-12PM',
+        AVG(CASE  WHEN HOUR(Dep_Time) >=12 AND HOUR(Dep_Time) <18 THEN Price END) AS '12PM-06PM',     
+        AVG(CASE WHEN HOUR(Dep_Time) >=18 AND HOUR(Dep_Time) <24 THEN Price END) AS '06PM-12AM'
+FROM flights_data.flights
+WHERE Source IN ('Banglore', 'Delhi')
+GROUP BY WEEKDAY
+ORDER BY Weekday;
+-- or 
+SELECT DAYNAME(Dep_DateTime) AS Weekday,
+       AVG(IF(HOUR(Dep_Time) >=0 AND HOUR(Dep_Time) <6, Price, NULL)) AS '12AM-06AM',     --- using IF function : it works like CASE WHEN ... THEN ... ELSE ... END ==> syntax of if block is : IF(condition, value_if_true, value_if_false)
+       AVG(IF(HOUR(Dep_Time) >=6 AND HOUR(Dep_Time) <12, Price, NULL)) AS '06AM-12PM',
+       AVG(IF(HOUR(Dep_Time) >=12 AND HOUR(Dep_Time) <18, Price, NULL)) AS '12PM-06PM',
+       AVG(IF(HOUR(Dep_Time) >=18 AND HOUR(Dep_Time) <24, Price, NULL)) AS '06PM-12AM'
+FROM flights_data.flights
+WHERE Source IN ('Banglore', 'Delhi')
+GROUP BY WEEKDAY
+ORDER BY Weekday;
