@@ -57,7 +57,40 @@ UPDATE datatypes
 SET skills = CONCAT(skills, ',C++')
 WHERE FIND_IN_SET('C++', skills) = 0 ;   -- only add C++ if not already present
 
-SELECT * FROM d atatypes ;
+SELECT * FROM datatypes ;
 
 INSERT INTO datatypes (user_id, course_id, price, rating, rating_double, Gender, skills)
 VALUES (102, 23, 799.99, 42.52, 12.5678901234567, 'Male', 'Python') ;
+
+ALTER Table datatypes
+ADD COLUMN  Certificate MEDIUMBLOB ;
+
+UPDATE datatypes
+SET Certificate = LOAD_FILE('D:/Confidential/ApnaCollege.jpg')
+WHERE user_id = 101;  -- or whichever user you want to add certificate to
+
+ALTER Table datatypes
+ADD COLUMN latLong GEOMETRY ;   -- to store geographical data like latitude and longitude points
+
+UPDATE datatypes
+SET latLong = ST_GeomFromText('POINT(40.7128 -74.0060)')  -- Example: New York City coordinates
+WHERE user_id = 101;  -- or whichever user you want to add geographical data to 
+
+SELECT * FROM datatypes ;
+-- to view the geographical data in a more readable format
+SELECT user_id, ST_AsText(latLong) AS latLong FROM datatypes ;
+-- to get latitude and longitude separately
+SELECT user_id, ST_X(latLong) AS latitude, ST_Y(latLong) AS longitude FROM datatypes ;
+
+
+ALTER Table datatypes
+ADD COLUMN description JSON ;   -- to store JSON data
+
+UPDATE datatypes
+SET description = '{"course":"Data Science","duration":"6 months","level":"Intermediate"}'
+WHERE user_id = 101;  
+
+SELECT * FROM datatypes ;
+
+SELECT JSON_EXTRACT(description, '$.course') AS course_name
+FROM datatypes ;
