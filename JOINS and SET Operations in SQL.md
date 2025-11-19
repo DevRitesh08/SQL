@@ -238,6 +238,7 @@ Self joins are used when you want to compare the values of two different rows wi
     WHERE c1.customer_id <> c2.customer_id;
 ```
 
+
 ```sql
 -- retrieve Customers with the same Country and Different Customer IDs
 -- use AS alias for better code readability
