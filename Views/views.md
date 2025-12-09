@@ -55,63 +55,87 @@ FROM Employees;
 
 A materialized view is a database object in SQL that contains the results of a query. Unlike regular views, which are just virtual tables that store SQL queries, materialized views are physical tables that store the results of a query. Materialized views are precomputed and stored on disk, which makes them much faster to access than regular views.
 
-- **Benefit** — Faster queries
-- **Disadvantage** — Need to manually update the view
+- **Benefit** — Faster queries , whereas regular views can be slower because they need to execute the underlying query each time they are accessed.
+- **Disadvantage** — Need to manually update the view , whereas regular views are always up-to-date because they are based on the underlying tables.
+                   - Maintenance overhead , as materialized views require additional storage space and may need to be refreshed periodically to ensure that they contain the most up-to-date data.
+
+- **Use Case** — Useful for large datasets or complex queries that are frequently accessed , such as in data warehousing or business intelligence applications.
 
 ## Creating Views
 
 To create a view in SQL, you can use the `CREATE VIEW` statement followed by the view name and the `AS` keyword, along with a `SELECT` statement that defines the data to be included in the view.
+
 ```sql
 CREATE VIEW view_name AS
 SELECT column1, column2, ...
 FROM table_name
 WHERE condition;
 ```
+
 For example, to create a view that shows all employees from the "Employees" table who work in the "Sales" department, you can use the following SQL statement:
+
 ```sql
 CREATE VIEW SalesEmployees AS
 SELECT * FROM Employees
 WHERE department = 'Sales';
 ```
+
 ## Using Views
 Once a view is created, you can use it in your SQL queries just like a regular table. For example, to retrieve all employees from the "SalesEmployees" view, you can use the following SQL statement:
+
 ```sql
 SELECT * FROM SalesEmployees;
 ```
+
 This will return all employees who work in the "Sales" department.
+
 ## Modifying Views
+
 To modify an existing view, you can use the `CREATE OR REPLACE VIEW` statement followed
 by the view name and the new `SELECT` statement that defines the updated data for the view.
+
 ```sql
 CREATE OR REPLACE VIEW view_name AS
 SELECT column1, column2, ...
 FROM table_name
 WHERE condition;
 ```
+
 For example, to modify the "SalesEmployees" view to include only employees with a salary greater than 50000, you can use the following SQL statement:
+
 ```sql
 CREATE OR REPLACE VIEW SalesEmployees AS
 SELECT * FROM Employees
 WHERE department = 'Sales' AND salary > 50000;
 ```
+
 ## Dropping Views
 To delete a view from the database, you can use the `DROP VIEW` statement followed by
 the view name.
+
 ```sql
 DROP VIEW view_name;
 ```
+
 For example, to delete the "SalesEmployees" view, you can use the following SQL statement:
+
 ```sql
 DROP VIEW SalesEmployees;
 ```
+
 This will remove the view from the database.
+
 ## Advantages of Using Views
+
 - **Simplified Queries**: Views can simplify complex queries by encapsulating them into a single object, making it easier to retrieve data.
 - **Data Security**: Views can restrict access to sensitive data by exposing only specific columns or rows to users.
 - **Data Abstraction**: Views can provide a level of abstraction by hiding the underlying table structure from users.
 - **Reusability**: Views can be reused across multiple queries, reducing the need to write the same complex SQL code repeatedly.
+
 ## Disadvantages of Using Views
+
 - **Performance Overhead**: Views can introduce performance overhead, especially if they are based on complex queries or involve multiple joins.
 - **Limited Functionality**: Some database systems may have limitations on the types of operations that can be performed on views, such as restrictions on updating data through views.
 - **Dependency Management**: Changes to the underlying tables can affect the views, requiring careful management of dependencies.
 - **Storage**: While views do not store data themselves, they can consume storage space in terms of metadata and query execution plans.
+- **Complexity**: Overuse of views can lead to increased complexity in database design and maintenance, making it harder to understand the overall data structure.
