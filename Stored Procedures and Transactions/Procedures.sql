@@ -182,5 +182,7 @@ DELETE FROM orders WHERE order_id = (SELECT MAX(order_id) FROM orders);
 
 -- DECLARE vs SET
 -- DECLARE is used to declare local variables within a stored procedure or function. It is used to define the data type and name of the variable. it can only be used inside stored procedures or functions.
--- SET is used to create , assign values to variables, or modify session variables. It can be used both inside and outside of stored procedures.
+-- SET is used to create , assign values to variables, or modify session variables. It can be used both inside and outside of stored procedures. but when used inside stored procedures, it is typically used to assign values to variables that have already been declared using DECLARE.
+
+-- @ is used to denote user-defined session variables in MySQL. These variables are prefixed with the "@" symbol and can be created and used without prior declaration. They are accessible throughout the session and can hold values that persist across multiple SQL statements.
 
