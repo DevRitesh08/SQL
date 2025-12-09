@@ -46,3 +46,35 @@ SELECT r_name , MONTHNAME(date) AS order_month , SUM(amount) AS total_amount FRO
 GROUP BY r_name , order_month
 ORDER BY r_name , order_month ;
 
+---
+-- changing data in table to see if view reflects the changes
+SELECT * from indo_airline_flights ; 
+-- changing gource from banglore to bangaluru
+UPDATE flights_data.flights
+SET source = 'Bengaluru'
+WHERE airline = 'IndiGo' AND source = 'Banglore' ;
+
+-- querying the view again to see the changes
+SELECT * from indo_airline_flights ;
+-- we can see that the changes are reflected in the view as well
+
+-- now making changes in the view to observe in the base table
+
+----
+-- changing delhi to new delhi in the view
+UPDATE indo_airline_flights
+SET destination = 'New Delhi'
+WHERE destination = 'Delhi' ;
+
+-- querying the base table to see the changes
+SELECT * FROM flights_data.flights
+WHERE airline = 'IndiGo' AND destination = 'New Delhi' ;
+-- we can see that the changes made in the view are reflected in the base table as well
+
+---
+-- Read only view example ==> 
+DELETE FROM joined_orders_details
+WHERE order_id =1021;   -- this will give error as we cannot delete from a read only view
+
+
+SELECT * FROM joined_orders_details;

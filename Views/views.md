@@ -17,6 +17,7 @@ There are mainly two types of views:
 
 ## Views vs Ctes
 Views and Common Table Expressions (CTEs) are both used to simplify complex queries, but they have some key differences:
+
 - **Persistence**: Views are stored in the database and can be reused across multiple queries, while CTEs are temporary and exist only for the duration of a single query.
 - **Performance**: Views can sometimes be optimized by the database engine for better performance, while CTEs are typically executed as part of the main query and may not benefit from the same optimizations.
 - **Readability**: CTEs can improve the readability of complex queries by breaking them into smaller, more manageable parts, while views can also enhance readability by encapsulating complex logic into a single object.
@@ -28,20 +29,37 @@ a. Read-only views:
 As the name suggests, read-only views are views that cannot be updated. They are used to simplify the process of querying data, but they cannot be used to modify or delete data in the underlying tables.
 
 b. Updatable views:  
+[MySQL View Updatability — Reference Manual](https://dev.mysql.com/doc/refman/8.0/en/view-updatability.html)
 Updatable views are views that allow you to modify, insert or delete data in the underlying tables through the view. They behave like normal tables, but with restrictions.
 
 To make a view updatable, certain conditions must be met. For example, the view must not contain any derived columns, subqueries, or aggregate functions.Additionally, the view must be based on a single table, and all columns in the view must be directly mapped to columns in the underlying table.
 
+#### Example of Read-only view:
 
+```sql
+CREATE VIEW ReadOnlyView AS
+SELECT department, COUNT(*) AS employee_count
+FROM Employees
+GROUP BY department;
+```
 
+#### Example of Updatable view:
 
+```sql  
+CREATE VIEW UpdatableView AS
+SELECT employee_id, first_name, last_name, department
+FROM Employees;
+```
 
+## Materialized Views ==> important but not present in MySQL
 
+A materialized view is a database object in SQL that contains the results of a query. Unlike regular views, which are just virtual tables that store SQL queries, materialized views are physical tables that store the results of a query. Materialized views are precomputed and stored on disk, which makes them much faster to access than regular views.
 
-
-
+- **Benefit** — Faster queries
+- **Disadvantage** — Need to manually update the view
 
 ## Creating Views
+
 To create a view in SQL, you can use the `CREATE VIEW` statement followed by the view name and the `AS` keyword, along with a `SELECT` statement that defines the data to be included in the view.
 ```sql
 CREATE VIEW view_name AS
