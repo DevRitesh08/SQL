@@ -95,3 +95,92 @@ CALL ADD_USER('bob', 'bob@example.com', @message);  --here first we initialize @
 -- to get the output message
 SELECT @message;   -- Output: User added successfully.
 
+--- drop procedure
+DROP PROCEDURE ADD_USER;
+-- drop added data
+DELETE FROM day6_db.student WHERE email IN ('alice@example.com', 'bob@example.com');
+
+
+-- stored procedure to fetch all orders of a customer when his/her email is provided
+
+CREATE PROCEDURE GetCustomerOrders(IN p_email VARCHAR(100))
+BEGIN
+    DECLARE id integer ;
+    SELECT user_id INTO id FROM users WHERE email = p_email; 
+
+    SELECT * FROM orders 
+    WHERE user_id = id;  -- here we are using the user_id to fetch all orders of the customer
+END;
+
+
+call `GetCustomerOrders`('vartika@gmail.com');  -- replace with an actual email from the customers table
+-- this will return all orders associated with the customer whose email is provided
+-- it is a major difference betweeen function and stored procedure ==> stored procedure can return multiple rows of data, while function returns a single value.
+
+
+-- drop procedure
+DROP PROCEDURE GetCustomerOrders;
+
+
+-- create a stored procedure to place a new order for a customer
+-- we need user_id, r_id,  f_item . 
+-- we have two tables orders and order_details both we will use to insert the new order and its details.
+-- and in output we will return the total amount of the order.
+
+CREATE PROCEDURE Place_Order(
+    IN p_user_id INT,
+    IN p_r_id INT,
+    IN p_f_ids VARCHAR(100),   -- food item name in VARCHAR because we will pass comma separated food item ids
+    OUT p_total_amount DECIMAL(10, 2)
+)
+BEGIN
+    -- Declare ALL variables first (before any SET, SELECT, etc.) ==> important in MySQL
+    DECLARE new_order_id INT;
+    DECLARE f_id1 INT;
+    DECLARE f_id2 INT;
+
+    -- insert into orders table
+    
+    -- generate new order id
+    -- DECLARE new_order_id INT;
+    SELECT MAX(order_id) + 1 INTO new_order_id FROM orders;  -- generate new order id
+
+    -- extracting the food ids
+    -- DECLARE f_id1 INT;      -- assuming we are placing order for two food items only for simplicity
+    -- DECLARE f_id2 INT;
+    -- Extract and CAST food IDs to INT
+    SET f_id1 = CAST(SUBSTRING_INDEX(p_f_ids, ',', 1) AS UNSIGNED);
+    SET f_id2 = CAST(SUBSTRING_INDEX(p_f_ids, ',', -1) AS UNSIGNED);
+
+    -- finding the price of items using food ids and r_id
+    SELECT SUM(price) INTO p_total_amount FROM menu WHERE r_id = p_r_id AND f_id IN (f_id1, f_id2);
+
+    -- insert into orders table
+    INSERT INTO orders (order_id, user_id, r_id, amount , date)
+    VALUES (new_order_id, p_user_id, p_r_id, p_total_amount, DATE(NOW()));
+
+
+    -- insert into order_details table
+    INSERT INTO order_details (order_id, f_id)
+    VALUES (new_order_id, f_id1), (new_order_id, f_id2);
+
+END;
+
+
+-- to call the procedure
+SET @total_amount = 0.00;
+
+CALL Place_Order(3, 3, '6,7', @total_amount);  -- assuming user_id=3, r_id=3, food items with f_id 6 and 7
+
+SELECT @total_amount AS Total_Amount;  -- Output: Total amount of the order
+
+-- drop procedure
+DROP PROCEDURE Place_Order;
+-- clean up the inserted order and order_details
+DELETE FROM order_details WHERE order_id = (SELECT MAX(order_id) FROM orders);
+DELETE FROM orders WHERE order_id = (SELECT MAX(order_id) FROM orders);
+
+-- DECLARE vs SET
+-- DECLARE is used to declare local variables within a stored procedure or function. It is used to define the data type and name of the variable. it can only be used inside stored procedures or functions.
+-- SET is used to create , assign values to variables, or modify session variables. It can be used both inside and outside of stored procedures.
+
