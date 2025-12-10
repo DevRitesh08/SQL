@@ -59,7 +59,7 @@ A materialized view is a database object in SQL that contains the results of a q
 - **Disadvantage** — Need to manually update the view , whereas regular views are always up-to-date because they are based on the underlying tables.
                    - Maintenance overhead , as materialized views require additional storage space and may need to be refreshed periodically to ensure that they contain the most up-to-date data.
 
-- **Use Case** — Useful for large datasets or complex queries that are frequently accessed , such as in data warehousing or business intelligence applications.
+- **Use Case** — Useful for large datasets or complex queries that are frequently accessed , such as in data warehousing , business intelligence applications , dasboards of youtube , zomato etc.
 
 ## Creating Views
 
@@ -81,6 +81,7 @@ WHERE department = 'Sales';
 ```
 
 ## Using Views
+
 Once a view is created, you can use it in your SQL queries just like a regular table. For example, to retrieve all employees from the "SalesEmployees" view, you can use the following SQL statement:
 
 ```sql
@@ -110,6 +111,7 @@ WHERE department = 'Sales' AND salary > 50000;
 ```
 
 ## Dropping Views
+
 To delete a view from the database, you can use the `DROP VIEW` statement followed by
 the view name.
 
