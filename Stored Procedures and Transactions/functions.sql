@@ -86,3 +86,35 @@ END;
 
 SELECT format_date(Date_of_Journey) from flights_data.flights ;
 
+-- drop the function after use
+DROP FUNCTION format_date;
+
+CREATE Function format_date(input_date VARCHAR(10))
+RETURNS VARCHAR(50)
+DETERMINISTIC
+BEGIN
+    -- SET input_date = STR_TO_DATE(input_date, '%Y-%m-%d');  -- convert string to date
+    RETURN DATE_FORMAT(input_date, '%D %b %y');    -- Reference : dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-format
+END;
+
+
+SELECT format_date(Date_of_Journey) from flights_data.flights ;
+-- still works without STR_TO_DATE as date_format is returning in varchar
+
+
+-- non -deterministic function example
+
+CREATE Function flights_between(source_city VARCHAR(50), dest_city VARCHAR(50))
+RETURNS INT
+READS SQL DATA -- indicates that the function reads data from the database ==> so it is non-deterministic
+BEGIN
+    DECLARE flight_count INT;
+    SELECT COUNT(*) INTO flight_count
+    FROM flights_data.flights
+    WHERE Source = source_city AND Destination = dest_city;
+
+    RETURN flight_count;
+END;
+
+SELECT flights_between('Banglore' , 'New Delhi') as num_flights;
+
