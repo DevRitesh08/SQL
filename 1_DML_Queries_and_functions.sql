@@ -1,3 +1,11 @@
+-- DDL Commands
+-- -- CREATE , ALTER , DROP , RENAME , TRUNCATE
+
+-- WHY TRUNCATE DDL ??
+
+
+
+
 -- DML Queries
 --    -- Insert , Update , Delete , Select
 
