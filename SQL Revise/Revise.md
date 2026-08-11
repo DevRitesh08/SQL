@@ -124,3 +124,187 @@ Memorize:
 > **HAVING → filters groups**
 
 That's much more powerful because it'll help you solve unfamiliar questions.
+
+# SQL Logical Processing Order
+
+The **logical processing order** of a SQL query is:
+
+```text
+FROM
+  ↓
+WHERE
+  ↓
+GROUP BY
+  ↓
+HAVING
+  ↓
+SELECT
+  ↓
+ORDER BY
+```
+
+That's why this works:
+
+```sql
+WHERE salary > 50000
+```
+
+before:
+
+```sql
+AVG(salary)
+```
+
+And this doesn't:
+
+```sql
+WHERE AVG(salary) > 70000
+```
+
+because the average hasn't been calculated at the `WHERE` stage.
+
+---
+
+## GROUP BY + HAVING Example
+
+```sql
+SELECT department_id,
+       COUNT(department_id) AS emp_count,
+       AVG(salary) AS avg_salary
+FROM Employees
+GROUP BY department_id
+HAVING AVG(salary) > 70000
+   AND COUNT(department_id) > 5;
+```
+
+---
+
+## ⚠️ Small but Important `COUNT()` Point
+
+For counting employees, I'd normally write:
+
+```sql
+COUNT(*)
+```
+
+rather than:
+
+```sql
+COUNT(department_id)
+```
+
+Why?
+
+- `COUNT(*)` → counts rows.
+- `COUNT(department_id)` → counts only rows where `department_id` is **NOT NULL**.
+
+So for **"number of employees"**:
+
+```sql
+COUNT(*)
+```
+
+is the safer mental default.
+
+---
+
+## `COUNT(*)` vs `COUNT(column)`
+
+Suppose this department has:
+
+| employee | department_id | salary |
+|---|---|---:|
+| A | IT | 60k |
+| B | IT | NULL |
+| C | IT | 80k |
+
+What will these return?
+
+```sql
+COUNT(*)
+```
+
+vs.
+
+```sql
+COUNT(salary)
+```
+
+### 🧠 Lock this in
+
+```text
+COUNT(*)       → counts rows
+COUNT(column)  → counts non-NULL values
+AVG(column)    → ignores NULLs
+```
+
+This **NULL + aggregate** combination is a very high-value interview trap.
+
+---
+
+## 🎯 Quick Trap
+
+What does this return if the table has **10 rows**, but `salary` is `NULL` in all 10?
+
+```sql
+COUNT(*)
+COUNT(salary)
+AVG(salary)
+```
+
+Answer:
+
+```text
+COUNT(*)       → 10
+COUNT(salary)  → 0
+AVG(salary)    → NULL
+```
+
+### 🧠 Why is `AVG(salary)` `NULL`, not `0`?
+
+Because there are no non-NULL salary values to average.
+
+Think:
+
+> `AVG()` asks: **"Average of what?"**
+
+If the answer is **nothing**, SQL gives you `NULL`, not `0`.
+
+So:
+
+```text
+10 rows exist
+    ↓
+COUNT(*) = 10
+
+0 salaries have values
+    ↓
+COUNT(salary) = 0
+
+Nothing to average
+    ↓
+AVG(salary) = NULL
+```
+
+---
+
+## ⚠️ Interview Trap: `NULL` vs `0`
+
+This is different from a real average of zero.
+
+```text
+AVG(salary) = 0
+→ There are values and their average is zero.
+
+AVG(salary) = NULL
+→ There were no usable values to calculate an average.
+```
+
+Also remember:
+
+```text
+NULL ≠ 0
+NULL ≠ empty string
+NULL = missing/unknown value
+```
+
