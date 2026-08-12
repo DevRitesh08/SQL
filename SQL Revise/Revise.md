@@ -286,6 +286,19 @@ Nothing to average
 AVG(salary) = NULL
 ```
 
+### ⚠️ Interview trap
+
+This is different from a real average of zero.
+
+- `AVG(salary) = 0` → there are values and their average is zero.
+- `AVG(salary) = NULL` → **there were no usable values to calculate an average.**
+
+Also remember:
+
+> **`NULL` ≠ 0**  
+> **`NULL` ≠ empty string**  
+> **`NULL` means missing/unknown value**
+
 ---
 
 ## ⚠️ Interview Trap: `NULL` vs `0`
@@ -308,3 +321,70 @@ NULL ≠ empty string
 NULL = missing/unknown value
 ```
 
+# 🔥 Next: `NULL` Comparisons
+
+This is where SQL gets unintuitive.
+
+Suppose:
+
+| Employee | Salary |
+|---|---:|
+| A | 50000 |
+| B | NULL |
+| C | 70000 |
+
+You might instinctively write:
+
+```sql
+SELECT *
+FROM Employees
+WHERE salary = NULL;
+```
+
+❌ **This does NOT find B.**
+
+You need:
+
+```sql
+SELECT *
+FROM Employees
+WHERE salary IS NULL;
+```
+
+And:
+
+```sql
+WHERE salary IS NOT NULL
+```
+
+for non-NULL salaries.
+
+### 🧠 Desi intuition
+
+`NULL` isn't a value like `0`.
+
+It's more like:
+
+> **"Bhai, salary ka pata hi nahi hai."**
+
+So asking:
+
+> `salary = NULL`
+
+is basically asking:
+
+> "Is this unknown thing equal to this other unknown thing?"
+
+SQL doesn't treat that as `TRUE`.
+
+That's connected to SQL's **three-valued logic**:
+
+```text
+TRUE
+FALSE
+UNKNOWN
+```
+
+For now, don't go deep into the formal logic. Just lock in:
+
+> **`NULL` → use `IS NULL` / `IS NOT NULL`**
