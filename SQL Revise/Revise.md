@@ -388,3 +388,4 @@ UNKNOWN
 For now, don't go deep into the formal logic. Just lock in:
 
 > **`NULL` → use `IS NULL` / `IS NOT NULL`**
+
