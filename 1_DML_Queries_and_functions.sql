@@ -2,7 +2,8 @@
 -- -- CREATE , ALTER , DROP , RENAME , TRUNCATE
 
 -- WHY TRUNCATE DDL ??
-
+-- resets/deallocates the table's data storage while keeping the table structure intact. 
+-- It is faster than DELETE because it does not generate individual row delete statements and does not log individual row deletions.
 
 
 
