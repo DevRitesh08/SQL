@@ -4,7 +4,6 @@ CREATE DATABASE if not exists Day2_db ;
 use Day2_db;
 CREATE table if not exists employee (
     emp_id int ,
-
     emp_name varchar(50) ,
     salary int ,
     city varchar(20)

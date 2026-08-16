@@ -2,6 +2,7 @@ show databases;
 
 use test;
 
+
 CREATE TABLE IF NOT EXISTS Orders (
     OrderID INT ,
     CustomerID INT NOT NULL,
