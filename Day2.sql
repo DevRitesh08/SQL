@@ -1,7 +1,7 @@
+show databases ;
 
-CREATE DATABASE if not exists Day2_db ;
+use sql_bootcamp ;
 
-use Day2_db;
 CREATE table if not exists employee (
     emp_id int ,
     emp_name varchar(50) ,
@@ -15,31 +15,46 @@ INSERT into employee VALUES(1, 'Shubham', 50000, 'Delhi'),
 
 SELECT * FROM employee ;
 
+show tables ;
+
 
 -- Add new column to the table
 alter table employee add dob date DEFAULT '2025-07-17' ;
 
 -- modify existing column in a table or change its data type
 ALTER Table employee modify column emp_name VARCHAR(100) ;
+ALTER Table employee modify emp_name VARCHAR(100) ;    -- both are same and will work fine
 
 
 -- delete existing column from a table
 alter Table employee drop column dob ;
+alter Table employee drop dob ;
 
 -- rename existing column in a table
 alter table employee rename column emp_name to employee_name ;
+alter table employee rename emp_name to employee_name ;     -- this will not work.
+alter table employee change emp_name  employee_name VARCHAR(100);     -- ⚠️ Important: CHANGE requires you to specify the column's data type again.
+
 
 -- rename the table
 alter table employee rename to emp_details ;
+
+SELECT * FROM emp_details ;
+
+
  
 -- add unique integrity constraint to a column .
 alter table emp_details add constraint unique_emp_id unique(emp_id);
 
 INSERT into emp_details values(1, 'Shubh', 5000, 'Delhi') ;
 
+
 -- drop the unique constraint
 alter table emp_details drop constraint unique_emp_id ; -- that is why it is important to give alias to the constraints
 INSERT into emp_details values(1, 'Shubh', 5000, 'Delhi') ;
+
+
+select * from emp_details ;
 
 
 
@@ -54,6 +69,7 @@ INSERT into emp_details values(1, 'Shubh', 5000, 'Delhi') ;
 --     std_age int ,
 --     primary key(std_id)
 -- );
+
 
 -- Method 2 (better approach)
 CREATE TABLE IF NOT EXISTS student (
@@ -72,12 +88,16 @@ insert into student values(1, 'Shubham', 23),
 insert into student values(1, 'Shubh', 23); -- error will be thrown as primary key cannot have duplicate values
 insert into student values(NULL, 'Shubh', 23); -- this will also throw an error as primary key cannot have NULL values
 
+
+select * from student ;
+
+
 -- Difference between primary key and unique constraint 
 alter table student add constraint uni_std_name UNIQUE(std_name); -- add unique constraint to std_name column
 
 INSERT INTO student VALUES(6 , 'aman', 21); -- error will be thrown as unique constraint is violated
 
-INSERT into student VALUES(7, NULL , 53) --no error since name has unique constraint that can take null .
+INSERT into student VALUES(7, NULL , 53) -- no error since name has unique constraint that can take null .
 
 INSERT into student VALUES(8, NULL, 22); -- no error as NULL is not considered duplicate
 
