@@ -135,7 +135,6 @@ DROP table student ; -- drop command completely deletes the table .
 
 
 
-use day2_db ;
 
 
 
@@ -174,7 +173,7 @@ SELECT COUNT(DISTINCT(city)) as distinct_city_count FROM teachers ;
 
 
 
-use day2_db ;
+
 select * from teachers ;
 
 
