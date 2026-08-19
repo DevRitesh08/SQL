@@ -177,6 +177,8 @@ SELECT COUNT(DISTINCT(city)) as distinct_city_count FROM teachers ;
 
 
 
+
+use day2_db ;
 select * from teachers ;
 
 
