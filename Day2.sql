@@ -18,6 +18,9 @@ SELECT * FROM employee ;
 show tables ;
 
 
+
+-- ALTER COMMAND : It is used to modify the existing table in the database . like adding new column , modifying existing column , deleting existing column , renaming existing column , renaming the table etc .
+
 -- Add new column to the table
 alter table employee add dob date DEFAULT '2025-07-17' ;
 
@@ -131,11 +134,11 @@ create table orders (
 
 select * from student;
 TRUNCATE Table student ; -- truncate command will delete the data but preserve the schema of table .
+
+select * from student; -- this will return empty result set as all the data is deleted but table is still present in the database .
 DROP table student ; -- drop command completely deletes the table .
 
-
-
-use day2_db ;
+select * from student; -- this will throw an error as table is deleted from the database .
 
 
 
@@ -160,6 +163,7 @@ SELECT COUNT(*) as total_records FROM teachers ; -- using alias
 -- Display all columns in the final result .
 SELECT * from teachers ;
 
+
 -- Display specific columns in the final result .
 SELECT teacher_name , salary from teachers ;
 SELECT teacher_name as Name, salary as Salary from teachers ; -- alias for multiple columns .
@@ -173,12 +177,13 @@ SELECT COUNT(DISTINCT(city)) as distinct_city_count FROM teachers ;
 
 
 
-
-use day2_db ;
 select * from teachers ;
 
 
 -- increment salary of each teacher by 20% and display the result .
+
+-- select * , salary + salary*0.2 as new_salary from teachers ;
+
 
 SELECT  teacher_id ,
         teacher_name ,
@@ -190,9 +195,11 @@ FROM teachers;
 
 
 
--- Update command
+-- Update command : It is used to modify the existing records in a table . like updating the salary of a teacher , updating the city of a teacher etc .
 
-UPDATE teachers SET city = 'jaipur' ;
+UPDATE teachers SET city = 'jaipur' ;   -- this will update the city of all teachers to jaipur .
+
+select * from teachers ; 
 
 -- update salary of each teacher by 20%  .
 UPDATE teachers SET salary = salary + salary*0.2 ;
@@ -210,7 +217,7 @@ UPDATE teachers set salary = 50000 WHERE teacher_subject = 'maths' ;
 
 
 
--- Delete command
+-- Delete command : it is used to delete the existing records in a table . like deleting the record of a teacher , deleting the record of a student etc .
 
 -- delete the record of teacher whose id is 1
 DELETE FROM teachers WHERE teacher_id = 1; 
