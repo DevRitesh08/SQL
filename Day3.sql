@@ -1,6 +1,4 @@
-
-CREATE DATABASE if not exists day3_db ;
-use day3_db ;
+use sql_bootcamp ;
 CREATE table workers (
     worker_id INT,
     worker_name varchar(50), 
@@ -37,30 +35,30 @@ SELECT * FROM classmates;
 
 
 
--- use of limit clause
+-- use of limit clause  : syntax : LIMIT number_of_records_to_skip , number_of_records_to_return ;
 SELECT * FROM classmates LIMIT 6; -- it will always be placed at the end of the query .
 SELECT * FROM classmates LIMIT 3, 5; -- it will skip the first 3 records and return the next 5 records.
 
 
 -- sorting data by using order by clause
 SELECT * FROM classmates ORDER BY name; -- here the sorting order is ascending in nature .
-SELECT * FROM classmates ORDER BY name DESC; -- here the sorting order is descending in nature .
+SELECT * FROM classmates ORDER BY name DESC; -- here the sorting order is descending in nature.
 
 
 
 
 
 -- Multi level ordering 
-use day3_db;
+
 -- create table employee the sort data in desc order by salary and if salaries are same for more than one employee arrange their data in ascending order of name .
-CREATE table if not exists employee (
+CREATE table if not exists staff (
     emp_id int AUTO_INCREMENT PRIMARY KEY ,
     emp_name varchar(50) ,
     salary int ,
     city varchar(20) DEFAULT 'jaipur'
 )
 
-INSERT into employee(emp_name , salary ) VALUES('Shubham', 50000),
+INSERT into staff(emp_name , salary ) VALUES('Shubham', 50000),
         ( 'Aman', 60000 ),
         ( 'Naveen', 55000) ,
         ('Aditya', 21000),
@@ -72,26 +70,27 @@ INSERT into employee(emp_name , salary ) VALUES('Shubham', 50000),
         ('ajay' , 50000);
 
 
-SELECT * FROM employee ORDER BY salary desc , emp_name ASC; -- by default it is in asc order , we can apply multiple level of ordering by using " , " next ordering will be executed when the earlier level is having duplicate values .
-SELECT * FROM employee ;
+SELECT * FROM staff ORDER BY salary desc , emp_name ASC; -- by default it is in asc order , we can apply multiple level of ordering by using " , " next ordering will be executed when the earlier level is having duplicate values .
+SELECT * FROM staff ;
 
 
 
--- Write a query to find the employee with the maximum salary .
-select * FROM employee ORDER BY salary desc limit 1 ;
+
+-- Write a query to find the staff with the maximum salary .
+select * FROM staff ORDER BY salary desc limit 1 ;
 
 
--- Write a query to find the employee with the minimum salary .
-select * FROM employee ORDER BY salary  limit 1 ;
+-- Write a query to find the staff with the minimum salary .
+select * FROM staff ORDER BY salary  limit 1 ;
 
 
 
 
 -- Conditional Operators : > , < , >= , <=
 -- Logical Operators : AND , OR , NOT
-use day3_db ;
 
-INSERT into employee(emp_name , salary ) VALUES('shantanu', 58000),
+
+INSERT into staff(emp_name , salary ) VALUES('shantanu', 58000),
         ( 'rishu', 30000 ),
         ( 'ritesh', 25000) ,
         ('ankush', 20000),
@@ -101,22 +100,22 @@ INSERT into employee(emp_name , salary ) VALUES('shantanu', 58000),
         ('mohit' , 72000) , 
         ('suryansh' , 84000) , 
         ('anju' , 39000);
-SELECT * FROM employee ;
+SELECT * FROM staff ;
 
--- List all employee whose salary is more than 60k
-SELECT * FROM employee WHERE salary > 60000 ;
+-- List all staff whose salary is more than 60k
+SELECT * FROM staff WHERE salary > 60000 ;
 
--- List all employee whose salary is equal to 50k , here in sql equality is " = " only . 
-SELECT * FROM employee WHERE salary = 50000 ;
+-- List all staff whose salary is equal to 50k , here in sql equality is " = " only . 
+SELECT * FROM staff WHERE salary = 50000 ;
 
--- List all employee whose salary is between 50k  and 75k
-SELECT * FROM employee WHERE salary >= 50000 and salary <= 75000;
+-- List all staff whose salary is between 50k  and 75k
+SELECT * FROM staff WHERE salary >= 50000 and salary <= 75000;
 
--- List all employee whose salary is not equal to 50k
+-- List all staff whose salary is not equal to 50k
 --Method 1
-SELECT * FROM employee WHERE salary != 50000 ;
+SELECT * FROM staff WHERE salary != 50000 ;
 --Method 2
-SELECT * FROM employee WHERE salary <> 50000 ;
+SELECT * FROM staff WHERE salary <> 50000 ;
 -- hence both " != " and " <> " can be used for the not equal to condition .
 
 
@@ -124,8 +123,8 @@ SELECT * FROM employee WHERE salary <> 50000 ;
 
 --How to use between operation in where clause 
 
--- List all employee whose salary is between 46k  and 61k
-SELECT * FROM employee WHERE salary BETWEEN 46000 AND 61000 ;
+-- List all staff whose salary is between 46k  and 61k
+SELECT * FROM staff WHERE salary BETWEEN 46000 AND 61000 ;
 
 
 
@@ -136,33 +135,33 @@ SELECT * FROM employee WHERE salary BETWEEN 46000 AND 61000 ;
 -- " % " : zero , one , or more characters .
 -- " _ " : only one character .
 
--- get all those employee whose name start with "r" .
-SELECT * FROM employee where emp_name LIKE 'r%' ;
+-- get all those staff whose name start with "r" .
+SELECT * FROM staff where emp_name LIKE 'r%' ;
 
--- get all those employee whose name start with "rit" .
-SELECT * FROM employee where emp_name LIKE 'rit%' ;
+-- get all those staff whose name start with "rit" .
+SELECT * FROM staff where emp_name LIKE 'rit%' ;
 
--- get all those employee whose name ends with "i" .
-SELECT * FROM employee where emp_name LIKE '%i' ;
+-- get all those staff whose name ends with "i" .
+SELECT * FROM staff where emp_name LIKE '%i' ;
 
--- get all  those employee whose name starts with "a" and ends with "u" .
-SELECT * FROM employee where emp_name LIKE 'a%u' ;
+-- get all  those staff whose name starts with "a" and ends with "u" .
+SELECT * FROM staff where emp_name LIKE 'a%u' ;
 
--- get all  those employee whose name starts with "y" and second last character is  "t" .
-SELECT * FROM employee where emp_name LIKE 'y%t_' ;
+-- get all  those staff whose name starts with "y" and second last character is  "t" .
+SELECT * FROM staff where emp_name LIKE 'y%t_' ;
 
--- get all those employees whose name have exactly 5 characters .
-SELECT * FROM employee where emp_name LIKE '_____' ; -- use '_' 5 times .
+-- get all those staff whose name have exactly 5 characters .
+SELECT * FROM staff where emp_name LIKE '_____' ; -- use '_' 5 times .
 
--- get all those employees whose name have at least 7 characters .
-SELECT * FROM employee where emp_name LIKE '%_______%' ;  -- use '_' 7 times .
+-- get all those staff whose name have at least 7 characters .
+SELECT * FROM staff where emp_name LIKE '%_______%' ;  -- use '_' 7 times .
 
 
 
 
 
 -- How to use is null and is not null in where clause
-INSERT into employee(emp_name , salary ) VALUES('anushka', 58000),
+INSERT into staff(emp_name , salary ) VALUES('anushka', 58000),
         ( 'bharti', 30000 ),
         ( 'harsh', 25000) ,
         ('megha', 20000),
@@ -173,13 +172,13 @@ INSERT into employee(emp_name , salary ) VALUES('anushka', 58000),
         ('chirag' , 84000) , 
         (null , 39000);
     
-SELECT * FROM employee ;
+SELECT * FROM staff ;
 
--- get all those employee whose salary is null
-SELECT * FROM employee where salary is null ;
+-- get all those staff whose salary is null
+SELECT * FROM staff where salary is null ;
 
----- get all those employee whose salary is not last list only 6 data from the last .
-SELECT * FROM employee where salary is not null ORDER BY emp_id DESC LIMIT 6;
+---- get all those staff whose salary is not null and list only 6 data from the last .
+SELECT * FROM staff where salary is not null ORDER BY emp_id DESC LIMIT 6;
 
 
 
@@ -230,6 +229,8 @@ SELECT * FROM order_data;
 
 -- Grouping data by country and counting the number of orders in each country
 
+
+
 -- Error: Only grouped columns or aggregate functions can be selected; customer_id is not allowed here.
 SELECT country,customer_id , count(*) as order_count from order_data GROUP BY country;
 -- Corrected query: Only grouped columns or aggregate functions can be selected; customer_id is not allowed here.
@@ -238,14 +239,16 @@ SELECT country , count(*) as order_count from order_data GROUP BY country;
 
 
 SELECT * FROM classmates;
+
 -- group data by age and count the number of students in each age group
+
 SELECT age , count(*) as age_count FROM classmates GROUP BY age;
 
 
 
-SELECT * FROM employee;
-DELETE FROM employee WHERE emp_name = NULL OR salary = NULL; -- this will not delete any record as NULL is not equal to NULL , the correct way to check for NULL is using " IS NULL " or " IS NOT NULL "
-DELETE FROM employee WHERE emp_name IS NULL OR salary IS NULL; -- this will delete all records where emp_name or salary is NULL
+SELECT * FROM staff;
+DELETE FROM staff WHERE emp_name = NULL OR salary = NULL; -- this will not delete any record as NULL is not equal to NULL , the correct way to check for NULL is using " IS NULL " or " IS NOT NULL "
+DELETE FROM staff WHERE emp_name IS NULL OR salary IS NULL; -- this will delete all records where emp_name or salary is NULL
 
 create table worker(
     worker_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -271,9 +274,9 @@ INSERT into worker(worker_name, worker_age, salary, city) VALUES
 ('Priya', 30, 49000, 'Chennai'),
 ('Karan', 26, 32000, 'Delhi');
 
-DROP TABLE IF EXISTS worker;
 
 SELECT * FROM worker;
+
 -- Grouping data by city and counting the number of workers in each city
 SELECT city, COUNT(*) AS worker_count FROM worker GROUP BY city;
 
