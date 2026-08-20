@@ -18,6 +18,8 @@
 ----
 
     -- Inserting data into a table
+
+    create DATABASE IF NOT EXISTS temp;
     use temp ;
 
     create table ticket (
@@ -68,11 +70,40 @@
 -- Changing primary key when auto increment is enabled
 ----
 
+-- We can't directly drop the primary key because the AUTO_INCREMENT column must be defined as a key.
+-- So first remove AUTO_INCREMENT, then drop the primary key.
 
-???.???
+ALTER TABLE temp.Users_table
+MODIFY user_id INT;
+
+ALTER TABLE temp.Users_table
+DROP PRIMARY KEY;
+
+SELECT * FROM temp.Users_table;
 
 
+-- if we are going to change the primary key to a different column .
+ALTER TABLE temp.Users_table
+MODIFY user_id INT,
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (email);
 
+-- if you want id to remain AUTO_INCREMENT, it must remain indexed/keyed. You can't have:
+
+-- id → AUTO_INCREMENT
+-- id → NOT a key
+
+----
+-- AUTO_INCREMENT column must be indexed, and usually is the PRIMARY KEY.
+----
+
+-- But AUTO_INCREMENT ≠ PRIMARY KEY.
+
+-- It is perfectly possible to have:
+
+-- id INT AUTO_INCREMENT UNIQUE
+
+-- because UNIQUE is also a key/index.
 
 
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------

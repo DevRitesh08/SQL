@@ -1,4 +1,4 @@
-fCREATE DATABASE IF NOT EXISTS day4_db; 
+CREATE DATABASE IF NOT EXISTS day4_db; 
 USE day4_db;
 
 CREATE Table order_data(
@@ -63,6 +63,8 @@ SELECT country from order_data GROUP BY country having count(*) = 6 ;
 
 
 -- how to use group_concat function
+-- it basically concatenates the values of a column into a single string, separated by a specified separator. It is often used to combine multiple rows of data into a single row. so it combines the column used in group by clause into a single row and then concatenates the values of the other column into a single string, separated by a specified separator.
+-- to change the default separator (which is comma) we can use the "SEPARATOR" keyword followed by the desired separator.
 -- group_concat function is used to concatenate the values of a column into a single string, separated by a specified separator.
 -- write a query to print the country and the list of states in that country , separated by a comma .
 SELECT country , GROUP_CONCAT( DISTINCT state) AS states_in_country FROM order_data GROUP BY country;
