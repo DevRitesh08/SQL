@@ -45,7 +45,7 @@
     create table if not exists temp.Users_table(
     user_id int	auto_increment primary key ,
     user_name varchar(30) not null ,
-    email varchar(50) not null unique ,
+    email varchar(50) not null  unique,
     user_password varchar(30) not null DEFAULT 'password123'
     );
 
@@ -86,7 +86,11 @@ SELECT * FROM temp.Users_table;
 ALTER TABLE temp.Users_table
 MODIFY user_id INT,
 DROP PRIMARY KEY,
-ADD PRIMARY KEY (email);
+ADD PRIMARY KEY (email);    
+-- If email has no UNIQUE constraint in the table definition,
+-- ADD PRIMARY KEY (email) will throw an error if duplicate values already exist.
+-- If there are no duplicates (and no NULLs), it will work fine.
+-- MySQL will make email the PRIMARY KEY and enforce UNIQUE + NOT NULL on it.
 
 -- if you want id to remain AUTO_INCREMENT, it must remain indexed/keyed. You can't have:
 
@@ -100,10 +104,15 @@ ADD PRIMARY KEY (email);
 -- But AUTO_INCREMENT ≠ PRIMARY KEY.
 
 -- It is perfectly possible to have:
-
 -- id INT AUTO_INCREMENT UNIQUE
-
 -- because UNIQUE is also a key/index.
+-- example:
+    create table if not exists temp.Users_table(
+    user_id int	auto_increment unique ,
+    user_name varchar(30) not null primary key,
+    email varchar(50) not null  unique,
+    user_password varchar(30) not null DEFAULT 'password123'
+    );
 
 
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -142,12 +151,13 @@ ADD PRIMARY KEY (email);
     SELECT model as Model , 
     SQRT(resolution_width*resolution_width + resolution_height*resolution_height)/screen_size as PPI 
     from temp.smartphones ;
+
     -- Adjusting rating out of 10
     SELECT model , rating/10 as Adjusted_Rating from temp.smartphones;
 
 
 
-    -- creating Constants 
+    -- creating Constants : meaning we can create a column with a constant value for all rows in the result set . example: we can create a column with value 'smartphone' for all rows in the result set.
 
     select model , 'smartphone' as 'type_' from temp.smartphones;
     SELECT model  , price*0.82 as Price_without_GST from temp.smartphones; -- assuming 18% GST
@@ -253,8 +263,30 @@ ADD PRIMARY KEY (email);
     DELETE FROM temp.smartphones where primary_camera_rear > 100 AND brand_name = 'Samsung';
 
 
-    -- Update and Delete are irreversible operations. Always take a backup before performing these operations on important data.
-    -- Use transactions to group multiple operations into a single unit of work that can be committed or rolled back as needed.
+-- UPDATE and DELETE can cause data loss if executed incorrectly.
+-- Always use a WHERE clause carefully and take a backup before modifying important data.
+
+-- Use transactions to group multiple operations into a single unit of work. here Changes can be undone using ROLLBACK before COMMIT.
+
+START TRANSACTION;
+
+UPDATE employees
+SET salary = salary * 1.10
+WHERE department_id = 10;
+
+-- Check the changes before making them permanent
+SELECT * FROM employees
+WHERE department_id = 10;
+
+-- If everything is correct:
+COMMIT;
+
+-- If something is wrong:
+ROLLBACK;
+
+-- IMPORTANT:
+-- After COMMIT, the transaction changes are permanent and cannot normally
+-- be undone using ROLLBACK.
 
 
 
@@ -309,6 +341,7 @@ ADD PRIMARY KEY (email);
 
 
     -- COUNT() : returns the number of rows in a table or the number of non-null values in a column.
+    -- but COUNT(*) counts all rows including duplicates and nulls, while COUNT(column_name) counts only non-null values in that column.
 
     -- finding the total number of one plus smartphones
     SELECT COUNT(*) as Total_OnePlus_Smartphones from temp.smartphones where brand_name = 'OnePlus';
