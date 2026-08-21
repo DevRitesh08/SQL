@@ -266,6 +266,14 @@ ADD PRIMARY KEY (email);
 -- UPDATE and DELETE can cause data loss if executed incorrectly.
 -- Always use a WHERE clause carefully and take a backup before modifying important data.
 
+-- TRUNCATE removes ALL rows from a table.
+-- It is a DDL operation in MySQL and cannot normally be rolled back.
+-- Therefore, use TRUNCATE with extra caution.
+
+-- DROP removes the entire table structure and its data from the database.
+-- It is a DDL operation in MySQL and cannot normally be rolled back.
+-- Therefore, use DROP with extra caution.
+
 -- Use transactions to group multiple operations into a single unit of work. here Changes can be undone using ROLLBACK before COMMIT.
 
 START TRANSACTION;

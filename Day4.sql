@@ -8,6 +8,8 @@ CREATE Table order_data(
     state VARCHAR(100) 
 );
 
+drop table  if EXISTS order_data ;
+
 INSERT INTO order_data (customer_id, country, state) VALUES
 (100, 'India', 'Delhi'),
 (282, 'India', 'Mumbai'),
@@ -120,7 +122,7 @@ SELECT * FROM order_data ;
 -- write a query to print all orders which were placed in delhi or texas .
 -- Method 1 : using OR operator
 SELECT * FROM order_data WHERE state = 'Delhi' OR state = 'Texas';
--- Method 2 : using IN operator
+-- Method 2 : using IN operator     (Recommended)
 SELECT * FROM order_data WHERE state IN ('Delhi', 'Texas');
 
 

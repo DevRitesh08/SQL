@@ -35,6 +35,10 @@ from temp.smartphones
 ORDER BY PPI DESC;
 
 -- find the phone with 2nd largest battery capacity
+
+SELECT model , battery_capacity from temp.smartphones
+ORDER BY battery_capacity DESC
+LIMIT 1 ,1 ; 
 SELECT model , battery_capacity from temp.smartphones
 ORDER BY battery_capacity DESC
 LIMIT 1 OFFSET 1;  -- OFFSET is used to skip a specific number of rows before starting to return rows from the query .
@@ -164,7 +168,7 @@ GROUP BY has_nfc;
 SELECT brand_name, COUNT(*) as model_count, ROUND(AVG(price), 2) as average_price
 FROM temp.smartphones
 GROUP BY brand_name
--- HAVING COUNT(*) >= 10
+HAVING COUNT(*) >= 10
 ORDER BY average_price DESC;
 
 
@@ -205,6 +209,7 @@ HAVING AVG(rating) > 70 and COUNT(*) > 10 ;
 SELECT batter , SUM(batsman_run) as runs
 FROM temp.ipl_complete
 GROUP BY batter
+HAVING COUNT(*) >= 100
 order by runs  DESC LIMIT 5 ;
 
 -- find the 2nd highest six hitter in ipl history who have played atleast 50 matches
@@ -225,7 +230,7 @@ GROUP BY batter , ID
 HAVING total_runs >= 100
 ORDER BY total_runs DESC
 
--- find the top 5 batsman with highest strke rate who have faced atleast 1000 balls in ipl history
+-- find the top 5 batsman with highest strike rate who have faced atleast 1000 balls in ipl history
 SELECT batter , SUM(batsman_run) as total_runs , COUNT(*) as num_balls , ROUND(SUM(batsman_run) * 100 / NULLIF(COUNT(*), 0), 2) as strike_rate      -- NULLIF is     used to avoid division by zero error
 FROM temp.ipl_complete
 GROUP BY batter
