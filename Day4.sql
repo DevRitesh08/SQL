@@ -308,7 +308,6 @@ CREATE Table orders (
 ) ;
 
 
-
 CREATE Table customers (
     cust_id INT ,
     cust_name VARCHAR(20) ,
