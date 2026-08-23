@@ -307,6 +307,8 @@ CREATE Table orders (
     shipper_id INT  
 ) ;
 
+drop table orders;
+
 
 CREATE Table customers (
     cust_id INT ,
