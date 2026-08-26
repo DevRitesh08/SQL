@@ -351,7 +351,20 @@ SELECT o.* , cust.* FROM orders AS o  LEFT JOIN  customers AS cust ON cust.cust_
 SELECT o.* , cust.* FROM orders AS o  RIGHT JOIN  customers AS cust ON cust.cust_id = o.cust_id;
 
 -- perform full outer join on customers and orders table .(ISSUE: Not all databases support FULL OUTER JOIN, so it may not work in some SQL environments)
-SELECT o.* , cust.* FROM orders AS o  FULL OUTER JOIN  customers AS cust ON cust.cust_id = o.cust_id;
+SELECT o.* , cust.* FROM orders AS o  FULL OUTER JOIN  customers AS cust ON cust.cust_id = o.cust_id;   -- does not work in mysql , works in postgresql and sql server .
+
+-- instead use union to perform full outer join in mysql
+SELECT o.*, cust.*
+FROM orders AS o
+LEFT JOIN customers AS cust
+    ON cust.cust_id = o.cust_id
+
+UNION
+
+SELECT o.*, cust.*
+FROM orders AS o
+RIGHT JOIN customers AS cust
+    ON cust.cust_id = o.cust_id;
 
 -- HOW to join more than two tables ?
 CREATE TABLE shippers (

@@ -26,27 +26,31 @@ insert into shop_sales_data values('2022-02-20','S3',300);
 
 -- If we only use Order by In Over Clause
 select *,
-       sum(sales_amount) over(order by sales_amount desc) as total_sum_of_sales
-from shop_sales_data;
+       sum(sales_amount) over(order by sales_date ASC) as total_sum_of_sales
+from shop_sales_data ;
 
 -- If we only use Partition By
 select *,
        sum(sales_amount) over(partition by shop_id) as total_sum_of_sales
-from shop_sales_data;
+from shop_sales_data ;
 
 -- If we only use Partition By & Order By together
 select *,
        sum(sales_amount) over(partition by shop_id order by sales_amount desc) as total_sum_of_sales
 from shop_sales_data;
 
+-- without using window function
+select shop_id, sum(sales_amount) as total_sale_amount_by_shops from shop_sales_data group by shop_id;
 select shop_id, count(*) as total_sale_count_by_shops from shop_sales_data group by shop_id;
 
 
 create table amazon_sales_data
 (
-    sales_data date,
+    sales_date date,
     sales_amount int
 );
+
+drop Table if exists amazon_sales_data;
 
 insert into amazon_sales_data values('2022-08-21',500);
 insert into amazon_sales_data values('2022-08-22',600);
@@ -61,6 +65,10 @@ select * from amazon_sales_data;
 select *,
        avg(sales_amount) over(order by sales_date) as rolling_avg
 from amazon_sales_data;
+
+-- but how ?
+-- Because the window function is applied to each row of the result set, and the order by clause in the over() function specifies the order in which the rows are processed. The avg() function calculates the average of the sales_amount for all rows that have been processed up to that point, which gives us a rolling average.
+
 
 select *,
        avg(sales_amount) over(order by sales_date) as rolling_avg,
@@ -118,13 +126,15 @@ SELECT * ,
 from employees
 WHERE row_num = 1;
 -- its not working because we cannot use alias in the same select statement , so we can use a subquery to achieve this.
+-- ❌ Doesn't work because row_num is created in the SELECT phase, but WHERE is processed before SELECT.
+
 SELECT emp.* FROM    
     (SELECT * , 
         ROW_NUMBER() OVER(PARTITION BY dept_name ORDER BY salary DESC) as row_num
     from employees) as emp
-WHERE emp.row_num = 1;
+WHERE emp.row_num = 1 ;
 
--- Query - get one employee from each department who are getting maximum salary .
+-- Query - get RANK one employee from each department who are getting maximum salary .
 SELECT emp.* FROM    
     (SELECT * , 
         RANK() OVER(PARTITION BY dept_name ORDER BY salary DESC) as rank_num
@@ -141,7 +151,14 @@ WHERE emp.dense_rank_num <= 2;
 
 
 
--- lag and lead :
+-- lag() and lead() functions :
+
+-- LAG() function is used to access data from a previous row in the same result set without the use of a self-join. It allows you to retrieve values from a specified number of rows before the current row, based on a defined ordering.
+-- Syntax: LAG(column_name, offset, default_value) OVER (ORDER BY column_name)           here offset is the number of rows back from the current row from which to retrieve a value. The default_value is optional and is returned when the offset goes beyond the scope of the partition.
+
+
+-- LEAD() function is used to access data from a subsequent row in the same result set without the use of a self-join. It allows you to retrieve values from a specified number of rows after the current row, based on a defined ordering.
+-- Syntax: LEAD(column_name, offset, default_value) OVER (ORDER BY column_name)  
 
  create table daily_sales
 (
@@ -191,6 +208,8 @@ from daily_sales;
 
 
 -- How to use Frame Clause  -> Rows Between 
+-- It is used to define a subset of rows within a partition for the window function to operate on. The frame clause allows you to specify a range of rows relative to the current row, which can be useful for calculating running totals, moving averages, and other aggregate functions.
+
 SELECT * FROM daily_sales ;
 
 
@@ -221,7 +240,7 @@ SELECT * ,
         sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN UNBOUNDED PRECEDING and CURRENT ROW) as prev_plus_next_sales_excluding_current
 FROM daily_sales;
 
--- getting sum of sales from current day  to all the following days . 
+-- getting sum of sales from current day to all the following days . 
 SELECT * ,
         sum(sales_amount) OVER(ORDER BY sales_date ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) as prev_plus_next_sales_excluding_current
 FROM daily_sales;
@@ -237,10 +256,14 @@ FROM daily_sales;
 
 
 -- How to work with Range Between
+-- The RANGE BETWEEN clause is used in SQL window functions to define a range of values based on the ordering of the rows. It allows you to specify a range of values relative to the current row, which can be useful for calculating running totals, moving averages, and other aggregate functions based on a specific range of values.
+-- syntax: RANGE BETWEEN value PRECEDING AND value FOLLOWING
+-- example: RANGE BETWEEN 100 PRECEDING AND 200 FOLLOWING :  it will include all rows where the value of the ordering column is between 100 less than the current row's value and 200 more than the current row's value.
 
  select *,
       sum(sales_amount) over(order by sales_amount range between 100 preceding and 200 following) as prev_plus_next_sales_sum
 from daily_sales;
+-- so here it will include all rows where the value of the ordering column is between 100 less than the current row's value and 200 more than the current row's value. So for example if we have a row with sales_amount = 500, then it will include all rows where sales_amount is between 400 and 700 (500-100 to 500+200).
 
 -- Calculate the running sum for a week
 -- Calculate the running sum for a month
@@ -255,5 +278,9 @@ select * from daily_sales;
 select *,
        sum(sales_amount) over(order by sales_date range between interval '6' day preceding and current row) as running_weekly_sum
 from daily_sales;
+
+-- here, the RANGE BETWEEN INTERVAL '6' DAY PRECEDING AND CURRENT ROW clause specifies that the window frame should include all rows where the sales_date is within the last 6 days (including the current row's date). This allows us to calculate the running sum of sales_amount for each day, considering only the sales from the past week.
+
+-- why interval and day are used : The INTERVAL keyword is used to specify a time-based range, and '6' DAY indicates that we want to include rows from 6 days before the current row up to the current row. This is useful for calculating rolling averages or sums over a specific time period.
 
 

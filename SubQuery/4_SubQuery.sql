@@ -2,18 +2,18 @@
 -- SubQuery
 ----
 
-SELECT * FROM movies.movies;
+SELECT * FROM temp.movies;
 -- Find the highest rated movie from movies table
 -- Method 1 :
-SELECT MAX(score) FROM movies.movies;
-SELECT * FROM movies.movies
+SELECT MAX(score) FROM temp.movies;
+SELECT * FROM temp.movies
 WHERE score = 9.3;
 -- Method 2 : using subquery
-SELECT * FROM movies.movies
-WHERE score = (SELECT MAX(score) FROM movies.movies);
+SELECT * FROM temp.movies
+WHERE score = (SELECT MAX(score) FROM temp.movies);
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-use movies;
+use temp;
 
 ---------
 ------ independent  Subquery : Scalar Subquery
@@ -39,17 +39,17 @@ where score > (SELECT AVG(score) from movies) ;
 
 ---- Question 3.
 -- Find the highest avg movie of 2000
-SELECT * FROM movies.movies
-WHERE year = 2000 AND score = (SELECT MAX(score) FROM movies.movies WHERE year = 2000);
+SELECT * FROM temp.movies
+WHERE year = 2000 AND score = (SELECT MAX(score) FROM temp.movies WHERE year = 2000);
 
 ---- Question 4.
 -- Find the highest rated movie among all movies whose number of votes are > the dataset avg votes count
-SELECT * FROM movies.movies
-WHERE votes > (SELECT AVG(votes) FROM movies.movies)
+SELECT * FROM temp.movies
+WHERE votes > (SELECT AVG(votes) FROM temp.movies)
 ORDER BY score DESC LIMIT 1;
 -- or 
-SELECT * FROM movies.movies
-WHERE score = (SELECT MAX(score) FROM movies.movies WHERE votes > (SELECT AVG(votes) FROM movies.movies));  -- this is slower
+SELECT * FROM temp.movies
+WHERE score = (SELECT MAX(score) FROM temp.movies WHERE votes > (SELECT AVG(votes) FROM temp.movies));  -- this is slower
 
 
 ---------
@@ -66,19 +66,19 @@ WHERE user_id NOT IN (SELECT DISTINCT user_id FROM zomato.orders);
 
 ---- Question 2.
 -- Find all movies made by top 3 directors (in terms of gross collection)
-SELECT * FROM movies.movies
-where director IN (SELECT director FROM movies.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3) ; -- this will not work because mysql does not allow limit in subquery
+SELECT * FROM temp.movies
+where director IN (SELECT director FROM temp.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3) ; -- this will not work because mysql does not allow limit in subquery
 
 
 -- Query to get top 3 directors based on total gross collection
-SELECT director FROM movies.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3;
+SELECT director FROM temp.movies GROUP BY director ORDER BY SUM(gross) DESC LIMIT 3;
 
 -- Join version of the above query
 SELECT m.*
-FROM movies.movies m
+FROM temp.movies m
 JOIN (
     SELECT director
-    FROM movies.movies
+    FROM temp.movies
     GROUP BY director
     ORDER BY SUM(gross) DESC
     LIMIT 3
@@ -86,11 +86,11 @@ JOIN (
 ON m.director = top_directors.director;
 
 -- using common table expression (CTE)
-WITH TopDirectors AS ( SELECT director from movies.movies 
+WITH TopDirectors AS ( SELECT director from temp.movies 
                         GROUP BY director 
                         ORDER BY SUM(gross) DESC 
                         LIMIT 3 )
-SELECT * FROM movies.movies 
+SELECT * FROM temp.movies 
 WHERE director IN (SELECT director FROM TopDirectors);
 
 
@@ -99,14 +99,14 @@ WHERE director IN (SELECT director FROM TopDirectors);
 -- Find all movies of all those actors whose filmography's avg rating > 8.5 (take 25000 votes as a benchmark for a movie to be considered in avg rating calculation) .
 
 -- getting the stars whose avg rating > 8.5
-SELECT star FROM movies.movies
+SELECT star FROM temp.movies
 where votes > 25000
 GROUP BY star
 HAVING AVG(score) > 8.5;
 
 -- getting the movies of those stars
-SELECT * FROM movies.movies
-WHERE star IN (SELECT star FROM movies.movies
+SELECT * FROM temp.movies
+WHERE star IN (SELECT star FROM temp.movies
                 where votes > 25000
                 GROUP BY star
                 HAVING AVG(score) > 8.5) ;
@@ -119,21 +119,21 @@ WHERE star IN (SELECT star FROM movies.movies
 ---------
 
 ---- Question 1.
--- Find the most profitable movie of each year
-SELECT * FROM movies.movies
+-- Find the most profitable movie of each year 
+SELECT * FROM temp.movies
 WHERE (year, (gross - budget)) IN (SELECT year, MAX(gross - budget) 
-                                    FROM movies.movies 
+                                    FROM temp.movies 
                                     GROUP BY year);
 
 ---- Question 2.
 -- Find the highest rated movie of each genre votes cutoff 25000
 -- first find the max score of each genre
-SELECT genre, max(score) FROM movies.movies
+SELECT genre, max(score) FROM temp.movies
 where votes > 25000
 GROUP BY genre;
 -- then find the movies with those genre and score
-SELECT * FROM movies.movies
-WHERE (genre, score) IN (SELECT genre, max(score) FROM movies.movies
+SELECT * FROM temp.movies
+WHERE (genre, score) IN (SELECT genre, max(score) FROM temp .movies
                         where votes > 25000
                         GROUP BY genre) AND votes > 25000;  
 
@@ -141,19 +141,20 @@ WHERE (genre, score) IN (SELECT genre, max(score) FROM movies.movies
 -- Find the highest grossing movies of top 5 actor/director combo in terms of total gross collection
 -- first find the top 5 actor/director combo in terms of total gross collection and also get their max grossing movie
 SELECT star, director, MAX(gross) 
-FROM movies.movies
+FROM temp.movies
 GROUP BY star, director 
 ORDER BY SUM(gross) DESC
 LIMIT 5;
+
 -- cannot use above query in subquery because of limit so we will use common table expression (CTE)
 WITH TopCombos AS (
     SELECT star, director, MAX(gross) 
-    FROM movies.movies
+    FROM temp.movies
     GROUP BY star, director 
     ORDER BY SUM(gross) DESC
     LIMIT 5
 )
-SELECT * FROM movies.movies 
+SELECT * FROM temp.movies 
 WHERE (star, director , gross) IN (SELECT * FROM TopCombos)
 
 
@@ -166,11 +167,11 @@ WHERE (star, director , gross) IN (SELECT * FROM TopCombos)
 ---- Question 1.
 -- Find all movies that have a rating higher than the average rating of movies in the same genre.
 
--- SELECT * FROM movies.movies
+-- SELECT * FROM temp.movies
 -- WHERE score > AVG(genre) -- but this genre is varying 
 
-SELECT * FROM movies.movies m1
-WHERE score > (SELECT AVG(score) FROM movies.movies m2 WHERE m1.genre = m2.genre);
+SELECT * FROM temp.movies m1
+WHERE score > (SELECT AVG(score) FROM temp.movies m2 WHERE m1.genre = m2.genre);
 -- Here m1 is outer query and m2 is inner query , and m1.genre is varying for each row of outer query so this is called correlated subquery
 -- This query will be slower because for each row of outer query the inner query will be executed
 
@@ -212,14 +213,14 @@ WHERE food_count = (SELECT MAX(food_count) FROM fav_food t2 WHERE t1.user_id = t
 
 ---- Question 1.
 -- Get the percentage of votes for each movie compared to the total number of votes .
-SELECT name , (votes/(SELECT SUM(votes) FROM movies.movies)) * 100 AS vote_percentage
-FROM movies.movies;
+SELECT name , (votes/(SELECT SUM(votes) FROM temp.movies)) * 100 AS vote_percentage
+FROM temp.movies;
 -- here it is not a correlated subquery because the inner query is not dependent on the outer query , and we can just use the sum of votes directly in the outer query because it is a single value
 
 ---- Question 2.
 -- Display all movie names , genre , score and avg(score) of genre 
-SELECT name , genre , score , (SELECT ROUND(AVG(score), 2) FROM movies.movies m2 WHERE m1.genre = m2.genre) AS avg_genre_score
-FROM movies.movies m1;
+SELECT name , genre , score , (SELECT ROUND(AVG(score), 2) FROM temp.movies m2 WHERE m1.genre = m2.genre) AS avg_genre_score
+FROM temp.movies m1;
 
 -----------
 -- Subquery in FROM clause
@@ -242,9 +243,9 @@ FROM  (SELECT r_id , ROUND(AVG(restaurant_rating), 2) AS avg_rating
 -- Question 1.
 -- Find genres having avg score > avg score of all the movies 
 SELECT genre, AVG(score) AS avg_genre_score
-FROM movies.movies
+FROM temp.movies
 GROUP BY genre
-HAVING avg_genre_score > (SELECT AVG(score) FROM movies.movies);
+HAVING avg_genre_score > (SELECT AVG(score) FROM temp.movies);
 
 
 -----------
