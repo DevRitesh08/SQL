@@ -32,7 +32,7 @@ SELECT emp_id , emp_name , salary FROM employees ;
 SELECT * FROM employee_data_for_finance;
 -- view occupy no space in the database , they are just a logical representation of the data in the table.
 -- the above query is actually querying the underlying table, like this :
-SELECT * FROM (SELECT emp_id , emp_name , salary FROM employees);
+SELECT * FROM (SELECT emp_id , emp_name , salary FROM employees) t;
 
 CREATE VIEW department_wise_salary AS
 SELECT dept_name , sum(salary) as total_salary FROM employees GROUP BY dept_name;
@@ -42,6 +42,13 @@ SELECT dept_name , sum(salary) as total_salary FROM employees GROUP BY dept_name
 
 
 -- Union and Union All
+
+-- UNION : it is used to combine the result set of two or more SELECT statements. It removes duplicate rows between the various SELECT statements.
+-- it requires that the number of columns and the data types of the columns in the SELECT statements must be the same.
+
+-- UNION ALL : it is used to combine the result set of two or more SELECT statements. It does not remove duplicate rows between the various SELECT statements.
+
+
 create table student    
 (
     stu_id int,
@@ -115,6 +122,10 @@ select email from student2;
 
 
 -- Common Table Expressions (CTE)
+-- CTE is a temporary result set that you can reference within a SELECT, INSERT, UPDATE, or DELETE statement. It is defined using the WITH clause and can be used to simplify complex queries, improve readability, and enhance performance.
+-- Syntax:
+-- WITH cte_name (column1, column2, ...) AS (
+--     -- CTE query definition
 
 create table amazon_employees(
     emp_id int,
@@ -147,6 +158,7 @@ select d.dept_name, tmp.total_salary
 from (select dept_id , sum(salary) as total_salary from amazon_employees group by dept_id) tmp
 inner join department d on tmp.dept_id = d.dept_id;
 
+
 --- how to do it using with clause??
 with dept_wise_salary as (select dept_id , sum(salary) as total_salary from amazon_employees group by dept_id)
 select d.dept_name, tmp.total_salary
@@ -156,7 +168,7 @@ inner join department d on tmp.dept_id = d.dept_id;
 SELECT * FROM dept_wise_salary;
 -- CTE can be used to simplify complex queries and make them more readable , it has no existence after the query .
 
--- with is faster than subquery and views because it is executed only once and the result is stored in memory, whereas subqueries and views are executed every time they are called in the query.
+-- WITH is faster than subquery and views because it is executed only once and the result is stored in memory, whereas subqueries and views are executed every time they are called in the query.
 
 
 --- Write a Query to generate numbers from 1 to 10 in SQL

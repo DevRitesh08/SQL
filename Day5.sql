@@ -283,4 +283,51 @@ from daily_sales;
 
 -- why interval and day are used : The INTERVAL keyword is used to specify a time-based range, and '6' DAY indicates that we want to include rows from 6 days before the current row up to the current row. This is useful for calculating rolling averages or sums over a specific time period.
 
+-- Find the highest-paid n employee in each department. (other types : 2nd/3rd highest salary per department , Top N products per category , Highest-paid employee per team , Top N students per class ,Nth highest score per group)
+SELECT *
+FROM (
+    SELECT
+        ...,
+        DENSE_RANK() OVER (
+            PARTITION BY group_column
+            ORDER BY value_column DESC
+        ) AS rnk
+    FROM table_name
+) t
+WHERE rnk = N;
 
+
+-- Find duplicates:
+SELECT *
+FROM (
+    SELECT *,
+           ROW_NUMBER() OVER (
+               PARTITION BY duplicate_columns
+               ORDER BY id
+           ) AS rn
+    FROM table_name
+) t
+WHERE rn > 1;
+
+-- Find consecutive periods / streaks / islands
+
+-- 1. LAG()
+--       ↓
+-- Find previous row
+
+-- 2. Compare current vs previous
+--       ↓
+-- Find where a new group starts
+
+-- 3. CASE
+--       ↓
+-- 1 = new group
+-- 0 = same group
+
+-- 4. Cumulative SUM()
+--       ↓
+-- Create group/streak ID
+
+-- 5. GROUP BY user_id, streak_id
+--       ↓
+-- Analyze each streak
